@@ -9,6 +9,7 @@ rl.on('line', (l) => {
 */
 
 const initials = {
+    '': 1,
     'zh': 1,
     'ch': 1,
     'sh': 1,

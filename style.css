@@ -6,6 +6,23 @@ body {
   font-family: system-ui, sans-serif;
 }
 
+#new-box {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  font-size: 14px;
+  padding: 6px 12px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #f0f0f0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+#new-box:hover {
+  background: #e4e4e4;
+}
+
 .box {
   position: absolute;
   display: flex;
@@ -16,6 +33,39 @@ body {
   border: 1px solid #ccc;
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.box-handle {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  height: 16px;
+  margin: -10px -10px 6px;
+  padding: 0 2px;
+  border-radius: 6px 6px 0 0;
+  background: #ddd;
+  cursor: grab;
+}
+
+.box-handle:active {
+  cursor: grabbing;
+}
+
+.box-close {
+  width: 16px;
+  height: 16px;
+  line-height: 14px;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.box-close:hover {
+  background: #c66;
+  color: #fff;
 }
 
 .box-row {
@@ -48,4 +98,5 @@ body {
   max-width: 220px;
   font-size: 13px;
   color: #a33;
+  white-space: pre-line;
 }

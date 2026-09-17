@@ -1,13 +1,37 @@
-document.querySelectorAll('.box').forEach(initBox);
-
 // Shared across all boxes: the same syllable's clip is fetched once no
 // matter how many boxes end up playing it.
 const audioCache = new Map();
+
+const boxTemplate = document.getElementById('box-template');
+const newBoxButton = document.getElementById('new-box');
+newBoxButton.addEventListener('click', createBox);
+
+const BOX_GAP = 12;
+
+// Every new box appears right next to the "new box" button; since boxes are
+// freely draggable, it's on the user to move it if they want to keep
+// several visible at once, rather than this imposing a layout on them.
+function createBox() {
+  const box = boxTemplate.content.firstElementChild.cloneNode(true);
+  document.body.appendChild(box);
+  initBox(box);
+
+  const buttonRect = newBoxButton.getBoundingClientRect();
+  box.style.left = `${buttonRect.right + BOX_GAP}px`;
+  box.style.top = `${buttonRect.top}px`;
+  box.querySelector('.box-input').focus();
+}
 
 function initBox(box) {
   const input = box.querySelector('.box-input');
   const playButton = box.querySelector('.box-play');
   const hint = box.querySelector('.box-hint');
+  const handle = box.querySelector('.box-handle');
+  const closeButton = box.querySelector('.box-close');
+
+  handle.addEventListener('mousedown', (e) => startDrag(e, box));
+  closeButton.addEventListener('mousedown', (e) => e.stopPropagation());
+  closeButton.addEventListener('click', () => box.remove());
 
   // Set once a play click validates the current text successfully; cleared
   // by any edit, so the next play click re-validates instead of just replaying.
@@ -42,6 +66,29 @@ function initBox(box) {
       hint.textContent = result.hint;
     }
   });
+}
+
+let topZIndex = 1;
+
+function startDrag(e, box) {
+  e.preventDefault();
+  box.style.zIndex = ++topZIndex;
+
+  const startX = e.clientX;
+  const startY = e.clientY;
+  const startLeft = box.offsetLeft;
+  const startTop = box.offsetTop;
+
+  function onMove(e) {
+    box.style.left = `${startLeft + (e.clientX - startX)}px`;
+    box.style.top = `${startTop + (e.clientY - startY)}px`;
+  }
+  function onUp() {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  }
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
 }
 
 function applyTone(input, toneDigit) {

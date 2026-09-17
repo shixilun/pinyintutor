@@ -7,13 +7,20 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="box" style="left: 120px; top: 100px;">
-    <div class="box-row">
-      <input class="box-input" type="text" placeholder="type a syllable" autocomplete="off" spellcheck="false">
-      <button class="box-play" type="button" aria-label="play">▶</button>
+  <button id="new-box" type="button">new box</button>
+
+  <template id="box-template">
+    <div class="box">
+      <div class="box-handle">
+        <button class="box-close" type="button" aria-label="delete">×</button>
+      </div>
+      <div class="box-row">
+        <input class="box-input" type="text" placeholder="type a syllable" autocomplete="off" spellcheck="false">
+        <button class="box-play" type="button" aria-label="play">▶</button>
+      </div>
+      <div class="box-hint" hidden></div>
     </div>
-    <div class="box-hint" hidden></div>
-  </div>
+  </template>
 
   <script src="pinyin.js"></script>
   <script src="script.js"></script>

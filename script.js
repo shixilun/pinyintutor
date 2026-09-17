@@ -7,19 +7,38 @@ const newBoxButton = document.getElementById('new-box');
 newBoxButton.addEventListener('click', createBox);
 
 const BOX_GAP = 12;
+const STAGGER = 24;
 
-// Every new box appears right next to the "new box" button; since boxes are
-// freely draggable, it's on the user to move it if they want to keep
-// several visible at once, rather than this imposing a layout on them.
+// A new box spawns right next to the "Hear a Syllable" button, staggered
+// off the end of the chain of still-untouched spawned boxes (so repeated
+// clicks don't pile boxes on top of each other). Once a box in the chain
+// is dragged away, the next box picks up the chain from whichever spawned
+// box is still sitting untouched closest to the end of it — or, if none
+// remain, starts over at the default spot next to the button.
+const spawnedBoxes = [];
+
 function createBox() {
   const box = boxTemplate.content.firstElementChild.cloneNode(true);
   document.body.appendChild(box);
   initBox(box);
 
   const buttonRect = newBoxButton.getBoundingClientRect();
-  box.style.left = `${buttonRect.right + BOX_GAP}px`;
-  box.style.top = `${buttonRect.top}px`;
+  const defaultLeft = buttonRect.right + BOX_GAP;
+  const defaultTop = buttonRect.bottom - box.offsetHeight;
+
+  const anchor = [...spawnedBoxes].reverse()
+    .find((b) => document.body.contains(b) && !b.dataset.moved);
+
+  if (anchor && anchor.offsetTop - STAGGER >= 0) {
+    box.style.left = `${anchor.offsetLeft + STAGGER}px`;
+    box.style.top = `${anchor.offsetTop - STAGGER}px`;
+  } else {
+    box.style.left = `${defaultLeft}px`;
+    box.style.top = `${defaultTop}px`;
+  }
+
   box.querySelector('.box-input').focus();
+  spawnedBoxes.push(box);
 }
 
 function initBox(box) {
@@ -82,6 +101,7 @@ function startDrag(e, box) {
   function onMove(e) {
     box.style.left = `${startLeft + (e.clientX - startX)}px`;
     box.style.top = `${startTop + (e.clientY - startY)}px`;
+    box.dataset.moved = 'true';
   }
   function onUp() {
     document.removeEventListener('mousemove', onMove);

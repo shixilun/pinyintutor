@@ -68,12 +68,18 @@ body {
   color: #fff;
 }
 
-.box-row {
+.syllable-player {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.player-row {
   display: flex;
   gap: 6px;
 }
 
-.box-input {
+.entry-input {
   width: 140px;
   font-size: 20px;
   padding: 4px 6px;
@@ -81,7 +87,7 @@ body {
   border-radius: 4px;
 }
 
-.box-play {
+.player-play {
   font-size: 16px;
   padding: 4px 10px;
   border: 1px solid #999;
@@ -90,11 +96,11 @@ body {
   cursor: pointer;
 }
 
-.box-play:hover {
+.player-play:hover {
   background: #e4e4e4;
 }
 
-.box-hint {
+.entry-hint {
   max-width: 220px;
   font-size: 13px;
   color: #a33;

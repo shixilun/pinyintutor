@@ -2,7 +2,94 @@
 // matter how many boxes end up playing it.
 const audioCache = new Map();
 
-const boxTemplate = document.getElementById('box-template');
+// Only these can ever appear in a canonical pinyin spelling: a-z except v
+// (which never appears; ü is only ever typed as the "u:" digraph), plus ':'
+// itself to type that digraph. Tone digits are handled separately below.
+const ALLOWED_LETTERS = /^[a-uw-z:]$/;
+
+// A bare syllable input: live character filtering, tone-digit application,
+// u:/ü autocorrect, and validation — all internal. Callers never read
+// .value or touch the hint element directly; they call getValue()/prime().
+function createSyllableEntry() {
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'entry-input';
+  input.placeholder = 'type a syllable';
+  input.autocomplete = 'off';
+  input.spellcheck = false;
+
+  const hint = document.createElement('div');
+  hint.className = 'entry-hint';
+  hint.hidden = true;
+
+  input.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key.length !== 1) return;
+    if (e.key >= '0' && e.key <= '9') {
+      e.preventDefault();
+      if (e.key <= '4') applyTone(input, Number(e.key));
+      return;
+    }
+    if (!ALLOWED_LETTERS.test(e.key)) {
+      e.preventDefault();
+    }
+  });
+
+  input.addEventListener('input', () => autoCorrect(input));
+
+  function getValue() {
+    const result = validateSyllable(input.value);
+    if (result.valid) {
+      hint.hidden = true;
+      hint.textContent = '';
+      return input.value;
+    }
+    hint.hidden = false;
+    hint.textContent = result.hint;
+    return null;
+  }
+
+  function prime(syllable, cursorPosition) {
+    input.value = syllable;
+    input.setSelectionRange(cursorPosition, cursorPosition);
+    hint.hidden = true;
+    hint.textContent = '';
+  }
+
+  function focus() {
+    input.focus();
+  }
+
+  return { input, hint, getValue, prime, focus };
+}
+
+// A syllable entry plus a play button: clicking it retrieves the entry's
+// value and plays it if valid; if invalid, the entry has already shown its
+// own hint and there's nothing further to do.
+function createSyllablePlayer() {
+  const entry = createSyllableEntry();
+
+  const playButton = document.createElement('button');
+  playButton.type = 'button';
+  playButton.className = 'player-play';
+  playButton.setAttribute('aria-label', 'play');
+  playButton.textContent = '▶';
+  playButton.addEventListener('click', () => {
+    const value = entry.getValue();
+    if (value !== null) playSyllable(value);
+  });
+
+  const row = document.createElement('div');
+  row.className = 'player-row';
+  row.append(entry.input, playButton);
+
+  const element = document.createElement('div');
+  element.className = 'syllable-player';
+  element.append(row, entry.hint);
+
+  return { element, focus: entry.focus };
+}
+
 const newBoxButton = document.getElementById('new-box');
 newBoxButton.addEventListener('click', createBox);
 
@@ -18,9 +105,28 @@ const STAGGER = 24;
 const spawnedBoxes = [];
 
 function createBox() {
-  const box = boxTemplate.content.firstElementChild.cloneNode(true);
+  const player = createSyllablePlayer();
+
+  const box = document.createElement('div');
+  box.className = 'box';
+
+  const handle = document.createElement('div');
+  handle.className = 'box-handle';
+  const closeButton = document.createElement('button');
+  closeButton.type = 'button';
+  closeButton.className = 'box-close';
+  closeButton.setAttribute('aria-label', 'delete');
+  closeButton.textContent = '×';
+  handle.appendChild(closeButton);
+
+  box.append(handle, player.element);
   document.body.appendChild(box);
-  initBox(box);
+
+  handle.addEventListener('mousedown', (e) => startDrag(e, box));
+  closeButton.addEventListener('mousedown', (e) => e.stopPropagation());
+  closeButton.addEventListener('click', () => box.remove());
+
+  box.style.zIndex = ++topZIndex;
 
   const buttonRect = newBoxButton.getBoundingClientRect();
   const defaultLeft = buttonRect.right + BOX_GAP;
@@ -37,54 +143,8 @@ function createBox() {
     box.style.top = `${defaultTop}px`;
   }
 
-  box.querySelector('.box-input').focus();
+  player.focus();
   spawnedBoxes.push(box);
-}
-
-function initBox(box) {
-  const input = box.querySelector('.box-input');
-  const playButton = box.querySelector('.box-play');
-  const hint = box.querySelector('.box-hint');
-  const handle = box.querySelector('.box-handle');
-  const closeButton = box.querySelector('.box-close');
-
-  handle.addEventListener('mousedown', (e) => startDrag(e, box));
-  closeButton.addEventListener('mousedown', (e) => e.stopPropagation());
-  closeButton.addEventListener('click', () => box.remove());
-
-  // Set once a play click validates the current text successfully; cleared
-  // by any edit, so the next play click re-validates instead of just replaying.
-  let validated = false;
-
-  input.addEventListener('keydown', (e) => {
-    if (e.metaKey || e.ctrlKey || e.altKey) return;
-    if (e.key.length === 1 && e.key >= '0' && e.key <= '9') {
-      e.preventDefault();
-      if (e.key <= '4') applyTone(input, Number(e.key));
-    }
-  });
-
-  input.addEventListener('input', () => {
-    autoCorrect(input);
-    validated = false;
-  });
-
-  playButton.addEventListener('click', () => {
-    if (validated) {
-      playSyllable(input.value);
-      return;
-    }
-    const result = validateSyllable(input.value);
-    if (result.valid) {
-      hint.hidden = true;
-      hint.textContent = '';
-      validated = true;
-      playSyllable(input.value);
-    } else {
-      hint.hidden = false;
-      hint.textContent = result.hint;
-    }
-  });
 }
 
 let topZIndex = 1;

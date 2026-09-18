@@ -80,21 +80,21 @@ function addtone(syl, tone) {
     let match;
     switch (true) {
     case !!(match = /iu(?:r?)$/.exec(syl)):
-        return syl.substr(0, match.index + 1) + tones['u'].at(tone) + syl.substring(match.index + 2);
+        return syl.substring(0, match.index + 1) + tones['u'].at(tone) + syl.substring(match.index + 2);
     case !!(match = /ui(?:r?)$/.exec(syl)):
-        return syl.substr(0, match.index + 1) + tones['i'].at(tone) + syl.substring(match.index + 2);
+        return syl.substring(0, match.index + 1) + tones['i'].at(tone) + syl.substring(match.index + 2);
     case !!(match = /(.)(?:ng?)(?:r?)$/.exec(syl)):
-        return syl.substr(0, match.index) + tones[match[1]].at(tone) + syl.substring(match.index + 1);
+        return syl.substring(0, match.index) + tones[match[1]].at(tone) + syl.substring(match.index + 1);
     case !!(match = /ai(?:r?)$/.exec(syl)):
-        return syl.substr(0, match.index) + tones['a'].at(tone) + syl.substring(match.index + 1);
+        return syl.substring(0, match.index) + tones['a'].at(tone) + syl.substring(match.index + 1);
     case !!(match = /ao(?:r?)$/.exec(syl)):
-        return syl.substr(0, match.index) + tones['a'].at(tone) + syl.substring(match.index + 1);
+        return syl.substring(0, match.index) + tones['a'].at(tone) + syl.substring(match.index + 1);
     case !!(match = /ei(?:r?)$/.exec(syl)):
-        return syl.substr(0, match.index) + tones['e'].at(tone) + syl.substring(match.index + 1);
+        return syl.substring(0, match.index) + tones['e'].at(tone) + syl.substring(match.index + 1);
     case !!(match = /ou(?:r?)$/.exec(syl)):
-        return syl.substr(0, match.index) + tones['o'].at(tone) + syl.substring(match.index + 1);
+        return syl.substring(0, match.index) + tones['o'].at(tone) + syl.substring(match.index + 1);
     case !!(match = /([aeiouü])(?:r?)$/.exec(syl)):
-        return syl.substr(0, match.index) + tones[match[1]].at(tone) + syl.substring(match.index + 1);
+        return syl.substring(0, match.index) + tones[match[1]].at(tone) + syl.substring(match.index + 1);
     default:
         return oldsyl;
     }

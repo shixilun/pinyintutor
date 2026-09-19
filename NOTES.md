@@ -2,11 +2,11 @@
 
 Deferred decisions and roadmap items that don't belong in `CONTEXT.md` (glossary only) or an ADR (not settled/architectural enough yet), but shouldn't be lost either.
 
-## Audio source (undecided)
+## Audio source (in use, but quality flagged — may revisit)
 
-Not reusing the existing `Sound/` folder from the old Perl/Tk prototype (~1,656 `.wav` files) — quality was judged low and uneven. Want nicer sound from online instead, for the pinyin syllables specifically (English example sounds will be rerecorded separately, not in scope here).
+In use: [`davinfifield/mp3-chinese-pinyin-sound`](https://github.com/davinfifield/mp3-chinese-pinyin-sound) (1,632 MP3 clips, `sound/mp3/`, Unlicense/public domain), with 15 syllable+tone gaps in that set filled in from the old Perl/Tk prototype's `Sound/` folder as `.wav` (`sound/wav/`) — `script.js`'s `loadAudio()` tries `sound/mp3/` first, falls back to `sound/wav/`.
 
-Candidate found so far: [`davinfifield/mp3-chinese-pinyin-sound`](https://github.com/davinfifield/mp3-chinese-pinyin-sound) on GitHub — 1,632 MP3 clips, named by tone-numbered syllable (e.g. `ma3.mp3`), covering essentially the full syllable × tone-1-4 inventory. Licensed under The Unlicense (public domain, no attribution required), ~30MB total. No neutral-tone clips, but that's not a blocker — toneless input is invalid/unplayable by design (see `CONTEXT.md`). Not yet quality-checked — only confirmed to exist, cover the syllable set, and be freely licensed.
+Now that lesson exercises (the dictation quiz) surface these clips in a "hear it cold, no visual cue" context, the recording quality reads as noticeably uneven across syllables — more apparent here than in the standalone entry boxes. May need to go searching for a better-quality audio source at some point; not blocking current work.
 
 ## Build phasing
 

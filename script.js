@@ -87,7 +87,7 @@ function createSyllablePlayer() {
   element.className = 'syllable-player';
   element.append(row, entry.hint);
 
-  return { element, focus: entry.focus };
+  return { element, focus: entry.focus, prime: entry.prime, getValue: entry.getValue };
 }
 
 const newBoxButton = document.getElementById('new-box');
@@ -202,22 +202,22 @@ function autoCorrect(input) {
 
 function validateSyllable(text) {
   if (!text) return { valid: false, hint: "type a syllable" };
-  const [letters, tone] = splittone(text);
-  const spellingHint = parse(letters);
+  const [rawsyl, tone] = splittone(text);
+  const spellingHint = parse(rawsyl);
   if (spellingHint) return { valid: false, hint: spellingHint };
   if (tone === 0) {
     return { valid: false, hint: "tone mark is missing" };
   }
-  const canonical = addtone(letters, tone);
-  if (canonical !== text) {
+  const syl = addtone(rawsyl, tone);
+  if (syl !== text) {
     return { valid: false, hint: "tone mark is over wrong vowel" };
   }
   return { valid: true };
 }
 
 function playSyllable(syllable) {
-  const [letters, tone] = splittone(syllable);
-  const base = `${letters.replace(/ü/g, 'v')}${tone}`;
+  const [rawsyl, tone] = splittone(syllable);
+  const base = `${rawsyl.replace(/ü/g, 'v')}${tone}`;
   let audio = audioCache.get(base);
   if (!audio) {
     audio = loadAudio(base);

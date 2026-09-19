@@ -73,38 +73,35 @@ function splittone(syl) {
     }
 }
 
-function addtone(syl, tone) {
-    let oldsyl = syl;
-    syl = untone(syl);
-    if (!tone) return syl;
+function addtone(rawsyl, tone) {
+    if (!tone) return rawsyl;
     let match;
     switch (true) {
-    case !!(match = /iu(?:r?)$/.exec(syl)):
-        return syl.substring(0, match.index + 1) + tones['u'].at(tone) + syl.substring(match.index + 2);
-    case !!(match = /ui(?:r?)$/.exec(syl)):
-        return syl.substring(0, match.index + 1) + tones['i'].at(tone) + syl.substring(match.index + 2);
-    case !!(match = /(.)(?:ng?)(?:r?)$/.exec(syl)):
-        return syl.substring(0, match.index) + tones[match[1]].at(tone) + syl.substring(match.index + 1);
-    case !!(match = /ai(?:r?)$/.exec(syl)):
-        return syl.substring(0, match.index) + tones['a'].at(tone) + syl.substring(match.index + 1);
-    case !!(match = /ao(?:r?)$/.exec(syl)):
-        return syl.substring(0, match.index) + tones['a'].at(tone) + syl.substring(match.index + 1);
-    case !!(match = /ei(?:r?)$/.exec(syl)):
-        return syl.substring(0, match.index) + tones['e'].at(tone) + syl.substring(match.index + 1);
-    case !!(match = /ou(?:r?)$/.exec(syl)):
-        return syl.substring(0, match.index) + tones['o'].at(tone) + syl.substring(match.index + 1);
-    case !!(match = /([aeiouü])(?:r?)$/.exec(syl)):
-        return syl.substring(0, match.index) + tones[match[1]].at(tone) + syl.substring(match.index + 1);
+    case !!(match = /iu(?:r?)$/.exec(rawsyl)):
+        return rawsyl.substring(0, match.index + 1) + tones['u'].at(tone) + rawsyl.substring(match.index + 2);
+    case !!(match = /ui(?:r?)$/.exec(rawsyl)):
+        return rawsyl.substring(0, match.index + 1) + tones['i'].at(tone) + rawsyl.substring(match.index + 2);
+    case !!(match = /(.)(?:ng?)(?:r?)$/.exec(rawsyl)):
+        return rawsyl.substring(0, match.index) + tones[match[1]].at(tone) + rawsyl.substring(match.index + 1);
+    case !!(match = /ai(?:r?)$/.exec(rawsyl)):
+        return rawsyl.substring(0, match.index) + tones['a'].at(tone) + rawsyl.substring(match.index + 1);
+    case !!(match = /ao(?:r?)$/.exec(rawsyl)):
+        return rawsyl.substring(0, match.index) + tones['a'].at(tone) + rawsyl.substring(match.index + 1);
+    case !!(match = /ei(?:r?)$/.exec(rawsyl)):
+        return rawsyl.substring(0, match.index) + tones['e'].at(tone) + rawsyl.substring(match.index + 1);
+    case !!(match = /ou(?:r?)$/.exec(rawsyl)):
+        return rawsyl.substring(0, match.index) + tones['o'].at(tone) + rawsyl.substring(match.index + 1);
+    case !!(match = /([aeiouü])(?:r?)$/.exec(rawsyl)):
+        return rawsyl.substring(0, match.index) + tones[match[1]].at(tone) + rawsyl.substring(match.index + 1);
     default:
-        return oldsyl;
+        return rawsyl;
     }
 }
 
-function parse(syl) {
-    if (!syl) return "you haven't entered a syllable";
-    let rawsyl = untone(syl);
+function parse(rawsyl) {
+    if (!rawsyl) return "you haven't entered a syllable";
     if (rawsyl === 'er') return "";
-    let {initial, final} = /(?<initial>[^aeiouüwy]*)(?<final>.*)/.exec(syl).groups;
+    let {initial, final} = /(?<initial>[^aeiouüwy]*)(?<final>.*)/.exec(rawsyl).groups;
     if (!final) return "every syllable must contain at least one vowel";
     if (!initials[initial]) return `a pinyin syllable can't begin with ${initial}`;
     if (parse[initial]) return parse[initial];

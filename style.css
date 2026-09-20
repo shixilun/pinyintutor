@@ -107,17 +107,20 @@ body {
   white-space: pre-line;
 }
 
+/* Fixed width, sized for the longest possible canonical syllable (a
+   2-letter initial plus a 4-letter final, e.g. "zhuang"/"chuang"/"shuang"
+   — 6 characters is the true max, a tone mark never adds length). Fixed
+   on purpose: grids must line up, and the dictation quiz swaps the same
+   button between icon and revealed-text without resizing. */
 .listen-btn {
-  width: 68px;
-  height: 32px;
-  font-size: 13px;
+  width: 112px;
+  height: 44px;
+  font-size: 18px;
   padding: 0 4px;
   border: 1px solid #999;
   border-radius: 4px;
   background: #f0f0f0;
   cursor: pointer;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -128,22 +131,29 @@ body {
 .listen-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  max-width: 310px;
+  justify-content: center;
+  gap: 10px;
+  margin: 16px 0;
 }
 
 .tone-rows {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
+  margin: 16px 0;
 }
 
 .dictation-quiz {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  max-width: 280px;
+  align-items: center;
+  gap: 10px;
+  max-width: 500px;
+  margin: 16px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fafafa;
 }
 
 .quiz-score {
@@ -179,6 +189,15 @@ body {
   cursor: pointer;
 }
 
+.tag-error {
+  outline: 2px dashed #c33;
+  outline-offset: 2px;
+  color: #c33;
+  font-style: normal;
+  text-decoration: none;
+  cursor: default;
+}
+
 #lessons-toggle {
   position: fixed;
   top: 12px;
@@ -204,7 +223,7 @@ body {
   top: 0;
   right: 0;
   bottom: 0;
-  width: 340px;
+  width: 680px;
   box-sizing: border-box;
   padding: 50px 16px 16px;
   background: #fff;
@@ -241,4 +260,11 @@ body {
 
 .lessons-content {
   margin-top: 16px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.lessons-content p {
+  margin: 0 0 1.1em;
 }

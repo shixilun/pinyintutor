@@ -168,9 +168,26 @@ function hydrateToneRows(el) {
   el.replaceWith(rows.element);
 }
 
-// <dictation syl="pā tā kā"></dictation> — a dictation quiz over that pool.
+// <dictation syl="pā tā" rawsyl="yi wu yu"></dictation> — a dictation quiz
+// over the combined pool: syl's syllables used as given, each of rawsyl's
+// expanded to all 4 tones. Either attribute alone is fine; at least one
+// is required.
 function hydrateDictation(el) {
-  const syllables = el.getAttribute('syl').trim().split(/\s+/);
+  const syl = el.getAttribute('syl');
+  const rawsyl = el.getAttribute('rawsyl');
+  if (!syl && !rawsyl) {
+    renderTagError(el, 'dictation needs a syl and/or rawsyl attribute');
+    return;
+  }
+
+  const syllables = [];
+  if (syl) syllables.push(...syl.trim().split(/\s+/));
+  if (rawsyl) {
+    rawsyl.trim().split(/\s+/).forEach((r) => {
+      for (let tone = 1; tone <= 4; tone++) syllables.push(addtone(r, tone));
+    });
+  }
+
   const quiz = createDictationQuiz(syllables);
   el.replaceWith(quiz.element);
 }
@@ -190,12 +207,24 @@ function playEgSound(src) {
   audio.play().catch((err) => console.error(err));
 }
 
+// A tag-authoring mistake (missing required attribute, etc.) is made
+// visible on the page itself, not just a devtools warning, so it's caught
+// by looking at the lesson rather than checking the console.
+function renderTagError(el, message) {
+  console.warn(message);
+  const span = document.createElement('span');
+  span.className = 'tag-error';
+  span.textContent = `${el.textContent} [${message}]`;
+  el.replaceWith(span);
+}
+
 // <eg src="...">text</eg> — inline, italic+underline, clickable English
 // audio (an English-vs-Chinese pronunciation comparison snippet).
+
 function hydrateEg(el) {
   const src = el.getAttribute('src');
   if (!src) {
-    console.warn('<eg> is missing its required src attribute; leaving unhydrated');
+    renderTagError(el, '<eg> is missing its required src attribute');
     return;
   }
   const span = document.createElement('span');
@@ -230,7 +259,7 @@ function hydrateEgPy(el) {
 function hydrateEgSentence(el) {
   const src = el.getAttribute('src');
   if (!src) {
-    console.warn('<egsentence> is missing its required src attribute; leaving unhydrated');
+    renderTagError(el, '<egsentence> is missing its required src attribute');
     return;
   }
   const container = document.createElement('div');

@@ -220,7 +220,7 @@ function playSyllable(syllable) {
   const base = `${rawsyl.replace(/ü/g, 'v')}${tone}`;
   let audio = audioCache.get(base);
   if (!audio) {
-    audio = loadAudio(base);
+    audio = loadAudio(base, MP3_DIR, WAV_DIR);
     audioCache.set(base, audio);
   }
   audio.currentTime = 0;
@@ -233,16 +233,19 @@ function playSyllable(syllable) {
 const MP3_DIR = 'sound/mp3';
 const WAV_DIR = 'sound/wav';
 
-function loadAudio(base) {
-  const audio = new Audio(`${MP3_DIR}/${base}.mp3`);
+// Generic mp3-then-wav loader: tries `${mp3Dir}/${base}.mp3` first, falls
+// back to `${wavDir}/${base}.wav` on error. Pass the same directory for
+// both to just try both extensions in one place (e.g. the <eg> family).
+function loadAudio(base, mp3Dir, wavDir) {
+  const audio = new Audio(`${mp3Dir}/${base}.mp3`);
   let triedFallback = false;
   audio.addEventListener('error', () => {
     if (triedFallback) {
-      console.error(`no audio file for ${base} (tried ${MP3_DIR} and ${WAV_DIR})`);
+      console.error(`no audio file for ${base} (tried ${mp3Dir} and ${wavDir})`);
       return;
     }
     triedFallback = true;
-    audio.src = `${WAV_DIR}/${base}.wav`;
+    audio.src = `${wavDir}/${base}.wav`;
     audio.play().catch(() => {});
   });
   return audio;

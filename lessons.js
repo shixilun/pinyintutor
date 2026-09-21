@@ -303,10 +303,12 @@ function loadManifest() {
       .then((res) => res.text())
       .then((text) => text.split('\n')
         .map((line) => line.trim())
-        .filter((line) => line.length > 0)
+        .filter((line) => line.length > 0 && !line.startsWith('#'))
         .map((line) => {
           const match = line.match(/^(\S+)\s+(.*)$/);
-          return match ? { file: match[1], title: match[2].trim() } : null;
+          if (!match) return null;
+          const file = match[1].endsWith('.md') ? match[1] : `${match[1]}.md`;
+          return { file, title: match[2].trim() };
         })
         .filter(Boolean));
   }
@@ -345,6 +347,17 @@ function loadTopic(file) {
   return topicCache.get(file);
 }
 
+// The currently-displayed section's nav entry, highlighted so a learner
+// can tell which syllables a listening-practice page is testing without
+// the (visually identical) page content alone giving it away.
+let activePageItem = null;
+
+function setActivePage(pageItem) {
+  if (activePageItem) activePageItem.classList.remove('active');
+  activePageItem = pageItem;
+  if (activePageItem) activePageItem.classList.add('active');
+}
+
 function renderPageList(pageList, content, topic) {
   topic.pages.forEach((page) => {
     const pageItem = document.createElement('div');
@@ -353,6 +366,7 @@ function renderPageList(pageList, content, topic) {
     pageItem.addEventListener('click', () => {
       content.innerHTML = page.html;
       hydratePage(content);
+      setActivePage(pageItem);
     });
     pageList.appendChild(pageItem);
   });
@@ -373,6 +387,10 @@ function renderTopicList(nav, content, entries) {
         loadTopic(file).then((topic) => renderPageList(pageList, content, topic));
       }
       pageList.hidden = !pageList.hidden;
+      if (pageList.hidden && activePageItem && pageList.contains(activePageItem)) {
+        content.innerHTML = '';
+        setActivePage(null);
+      }
     });
 
     nav.append(topicItem, pageList);
@@ -385,29 +403,37 @@ function createLessonsPanel() {
   toggle.type = 'button';
   toggle.textContent = 'Lessons';
 
-  const panel = document.createElement('aside');
-  panel.id = 'lessons-panel';
-  panel.hidden = true;
+  // Two separate docked panels, not one panel split internally: the toc
+  // sits in its own bordered box immediately to the left of the content
+  // viewport, matching the old prototype's two-pane window layout.
+  const tocPanel = document.createElement('aside');
+  tocPanel.id = 'toc-panel';
+  tocPanel.hidden = true;
 
   const nav = document.createElement('nav');
   nav.className = 'lessons-nav';
+  tocPanel.append(nav);
+
+  const contentPanel = document.createElement('aside');
+  contentPanel.id = 'lessons-panel';
+  contentPanel.hidden = true;
 
   const content = document.createElement('div');
   content.className = 'lessons-content';
-
-  panel.append(nav, content);
+  contentPanel.append(content);
 
   let opened = false;
   toggle.addEventListener('click', () => {
     opened = !opened;
-    panel.hidden = !opened;
+    tocPanel.hidden = !opened;
+    contentPanel.hidden = !opened;
     toggle.textContent = opened ? 'Close' : 'Lessons';
     if (opened && nav.children.length === 0) {
       loadManifest().then((entries) => renderTopicList(nav, content, entries));
     }
   });
 
-  document.body.append(toggle, panel);
+  document.body.append(toggle, tocPanel, contentPanel);
 }
 
 createLessonsPanel();

@@ -6,6 +6,15 @@ body {
   font-family: system-ui, sans-serif;
 }
 
+#app-title {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  margin: 0;
+  font-size: 18px;
+  z-index: 1;
+}
+
 #new-box {
   position: fixed;
   bottom: 12px;
@@ -215,9 +224,9 @@ body {
   background: #e4e4e4;
 }
 
-/* Boxes always draggable above the panel: createBox() assigns each box an
-   explicit z-index above this one at creation time (script.js), and that
-   counter only ever increments, so this stays the lowest layer. */
+/* Boxes always draggable above these panels: createBox() assigns each box
+   an explicit z-index above this one at creation time (script.js), and
+   that counter only ever increments, so this stays the lowest layer. */
 #lessons-panel {
   position: fixed;
   top: 0;
@@ -229,6 +238,23 @@ body {
   background: #fff;
   border-left: 1px solid #ccc;
   box-shadow: -1px 0 3px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  z-index: 1;
+}
+
+/* Its own separate box, docked immediately to the left of #lessons-panel
+   (right: 680px = that panel's width), matching the old prototype's
+   two-pane window rather than a single panel split internally. */
+#toc-panel {
+  position: fixed;
+  top: 0;
+  right: 680px;
+  bottom: 0;
+  width: 240px;
+  box-sizing: border-box;
+  padding: 50px 16px 16px;
+  background: #fafafa;
+  border-left: 1px solid #ccc;
   overflow-y: auto;
   z-index: 1;
 }
@@ -249,9 +275,16 @@ body {
 }
 
 .lessons-page {
-  padding: 4px 0;
+  padding: 4px 6px;
   font-size: 14px;
   cursor: pointer;
+  border-radius: 3px;
+}
+
+.lessons-page.active {
+  background: #06c;
+  color: #fff;
+  font-weight: bold;
 }
 
 .lessons-page:hover {
@@ -259,7 +292,6 @@ body {
 }
 
 .lessons-content {
-  margin-top: 16px;
   font-family: Georgia, 'Times New Roman', Times, serif;
   font-size: 17px;
   line-height: 1.7;

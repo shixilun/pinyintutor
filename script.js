@@ -18,9 +18,11 @@ function createSyllableEntry() {
   input.autocomplete = 'off';
   input.spellcheck = false;
 
+  // Always stays in the layout (reserved height via CSS), never toggled
+  // with `hidden`, so a hint appearing/disappearing doesn't shift
+  // whatever content sits below the entry.
   const hint = document.createElement('div');
   hint.className = 'entry-hint';
-  hint.hidden = true;
 
   input.addEventListener('keydown', (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -40,11 +42,9 @@ function createSyllableEntry() {
   function getValue() {
     const result = validateSyllable(input.value);
     if (result.valid) {
-      hint.hidden = true;
       hint.textContent = '';
       return input.value;
     }
-    hint.hidden = false;
     hint.textContent = result.hint;
     return null;
   }
@@ -52,7 +52,6 @@ function createSyllableEntry() {
   function prime(syllable, cursorPosition) {
     input.value = syllable;
     input.setSelectionRange(cursorPosition, cursorPosition);
-    hint.hidden = true;
     hint.textContent = '';
   }
 

@@ -154,11 +154,34 @@ function hydratePy(el) {
   el.replaceWith(span);
 }
 
-// <listen syl="mā má mǎ mà"></listen> — a wrapping grid of listen buttons.
+// <syllableentry></syllableentry> — an embedded interactive syllable-entry
+// box, no priming, no play button: just the input + validation hint, same
+// component createBox()/createSyllablePlayer() are themselves built from.
+function hydrateSyllableEntry(el) {
+  const entry = createSyllableEntry();
+  const wrapper = document.createElement('div');
+  wrapper.className = 'syllable-entry-embed';
+  wrapper.append(entry.input, entry.hint);
+  el.replaceWith(wrapper);
+}
+
+// <syllableplayer></syllableplayer> — an embedded interactive syllable
+// entry plus play button, identical to what "Hear a Syllable" creates as
+// a draggable box, minus the drag handle/close chrome.
+function hydrateSyllablePlayer(el) {
+  const player = createSyllablePlayer();
+  el.replaceWith(player.element);
+}
+
+// <listen syl="mā má mǎ mà" icon></listen> — a wrapping grid of listen
+// buttons. `icon` is a boolean-presence attribute: present shows the
+// generic speaker icon on every button, absent (the default) shows the
+// syllable text.
 function hydrateListen(el) {
   const syllables = el.getAttribute('syl').trim().split(/\s+/);
-  console.log('<listen> syl:', syllables);
-  const grid = createListenGrid(syllables);
+  const showIcon = el.hasAttribute('icon');
+  console.log('<listen> syl:', syllables, 'icon:', showIcon);
+  const grid = createListenGrid(syllables, { showIcon });
   el.replaceWith(grid.element);
 }
 
@@ -318,6 +341,8 @@ function hydratePage(root, namedSets) {
   root.querySelectorAll('eg').forEach(hydrateEg);
   root.querySelectorAll('egpy').forEach(hydrateEgPy);
   root.querySelectorAll('egsentence').forEach(hydrateEgSentence);
+  root.querySelectorAll('syllableentry').forEach(hydrateSyllableEntry);
+  root.querySelectorAll('syllableplayer').forEach(hydrateSyllablePlayer);
   root.querySelectorAll('listen').forEach(hydrateListen);
   root.querySelectorAll('tonerows').forEach(hydrateToneRows);
   root.querySelectorAll('dictation').forEach((el) => hydrateDictation(el, namedSets));

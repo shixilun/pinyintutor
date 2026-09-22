@@ -1,0 +1,22 @@
+intro          Introduction to Pinyin
+howto          How to Use This Tutorial
+tones          Tones
+yiwuyu         yi, wu, yu
+aeo            a, e, o
+yayewawoyue    ya, ye, wa, wo, yue
+aieiaoou       ai, ei, ao, ou
+yaoyouwaiwei   yao, you, wai, wei
+anenangengong  an, ang, ong, en, eng
+yinyingyun     yin, ying, yun
+yangyong       yang, yong
+wanwenwangweng wan, wen, wang, weng
+yanyuan        yan, yuan
+ptk            p, t, k
+bdg            b, d, g
+mfnlh          m, f, n, l, h
+sshr           s, sh, r
+zc             z, c
+zhch           zh, ch
+spell          Spelling Rules
+jqx            j, q, x
+special        Special Syllables

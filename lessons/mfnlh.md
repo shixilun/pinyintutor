@@ -36,7 +36,7 @@ To type in <py>ü</py>, first type <py>u</py> and then type <py>:</py>
 (a colon).  You add the tones the same way as before.  Try typing
 <py>nü lü nüe lüe</py> in the four tones in the box below.
 
-**NEED BOX HERE**
+<syllableentry></syllableentry>
 
 ## Listening Practice
 

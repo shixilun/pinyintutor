@@ -157,6 +157,7 @@ function hydratePy(el) {
 // <listen syl="mā má mǎ mà"></listen> — a wrapping grid of listen buttons.
 function hydrateListen(el) {
   const syllables = el.getAttribute('syl').trim().split(/\s+/);
+  console.log('<listen> syl:', syllables);
   const grid = createListenGrid(syllables);
   el.replaceWith(grid.element);
 }
@@ -164,6 +165,7 @@ function hydrateListen(el) {
 // <tonerows rawsyl="ma pa"></tonerows> — one row per syllable, 4 tones each.
 function hydrateToneRows(el) {
   const rawsylList = el.getAttribute('rawsyl').trim().split(/\s+/);
+  console.log('<tonerows> rawsyl:', rawsylList);
   const rows = createToneRows(rawsylList);
   el.replaceWith(rows.element);
 }
@@ -172,20 +174,47 @@ function hydrateToneRows(el) {
 // over the combined pool: syl's syllables used as given, each of rawsyl's
 // expanded to all 4 tones. Either attribute alone is fine; at least one
 // is required.
-function hydrateDictation(el) {
-  const syl = el.getAttribute('syl');
-  const rawsyl = el.getAttribute('rawsyl');
-  if (!syl && !rawsyl) {
+// Resolves an attribute's value into a flat array of syllables. Each
+// token is resolved independently — a literal syllable, or (if it starts
+// with @) expanded to a named set's contents (looked up in namedSets,
+// built from <cartesian>/<syllableset> in the topic's preamble). The two
+// can be freely mixed within one attribute: the @ prefix is distinctive
+// enough on its own that there's no ambiguity per token.
+function resolveSetAttr(attrValue, namedSets) {
+  if (!attrValue) return [];
+  const tokens = attrValue.trim().split(/\s+/).filter(Boolean);
+  return tokens.flatMap((t) => {
+    if (!t.startsWith('@')) return [t];
+    const refName = t.slice(1);
+    const set = namedSets.get(refName);
+    if (!set) throw new Error(`references unknown set "${refName}"`);
+    return [...set];
+  });
+}
+
+// <dictation syl="pā tā" rawsyl="yi wu yu"></dictation> — a dictation quiz
+// over the combined pool: syl's syllables used as given, each of rawsyl's
+// expanded to all 4 tones. Either attribute alone is fine; at least one is
+// required. Either attribute's value may instead be one or more @name
+// references (never mixed with literals) into namedSets.
+function hydrateDictation(el, namedSets) {
+  const sylAttr = el.getAttribute('syl');
+  const rawsylAttr = el.getAttribute('rawsyl');
+  if (!sylAttr && !rawsylAttr) {
     renderTagError(el, 'dictation needs a syl and/or rawsyl attribute');
     return;
   }
 
-  const syllables = [];
-  if (syl) syllables.push(...syl.trim().split(/\s+/));
-  if (rawsyl) {
-    rawsyl.trim().split(/\s+/).forEach((r) => {
-      for (let tone = 1; tone <= 4; tone++) syllables.push(addtone(r, tone));
-    });
+  let syllables;
+  try {
+    const syl = resolveSetAttr(sylAttr, namedSets);
+    const rawsylList = resolveSetAttr(rawsylAttr, namedSets);
+    const expanded = rawsylList.flatMap((r) => [1, 2, 3, 4].map((tone) => addtone(r, tone)));
+    syllables = [...syl, ...expanded];
+    console.log('<dictation> pool:', syllables);
+  } catch (err) {
+    renderTagError(el, err.message);
+    return;
   }
 
   const quiz = createDictationQuiz(syllables);
@@ -280,14 +309,14 @@ function hydrateEgSentence(el) {
   el.replaceWith(container);
 }
 
-function hydratePage(root) {
+function hydratePage(root, namedSets) {
   root.querySelectorAll('py').forEach(hydratePy);
   root.querySelectorAll('eg').forEach(hydrateEg);
   root.querySelectorAll('egpy').forEach(hydrateEgPy);
   root.querySelectorAll('egsentence').forEach(hydrateEgSentence);
   root.querySelectorAll('listen').forEach(hydrateListen);
   root.querySelectorAll('tonerows').forEach(hydrateToneRows);
-  root.querySelectorAll('dictation').forEach(hydrateDictation);
+  root.querySelectorAll('dictation').forEach((el) => hydrateDictation(el, namedSets));
 }
 
 // ---- Lessons panel: manifest + topic loading + panel UI ----
@@ -317,31 +346,89 @@ function loadManifest() {
 
 // Splits raw markdown on "## " lines *before* any HTML rendering, so the
 // heading itself is consumed as the page's title and never duplicated in
-// the rendered body.
+// the rendered body. Anything before the first "## " (the preamble) is
+// where <cartesian>/<syllableset> definitions live — returned separately,
+// never rendered as page content.
 function splitPages(raw) {
   const parts = raw.split(/^## (.*)$/m);
+  const preamble = parts[0];
   const pages = [];
   for (let i = 1; i < parts.length; i += 2) {
     pages.push({ title: parts[i].trim(), rawBody: parts[i + 1] });
   }
-  return pages;
+  return { preamble, pages };
+}
+
+// <cartesian name="syl1" i="p t k" f="a e ai"></cartesian> — the cross
+// product of every initial in `i` with every final in `f`, named `name`.
+function applyCartesian(el, namedSets) {
+  const name = el.getAttribute('name');
+  if (!name) throw new Error('<cartesian> is missing a name attribute');
+  const initials = (el.getAttribute('i') || '').trim().split(/\s+/).filter(Boolean);
+  const finals = (el.getAttribute('f') || '').trim().split(/\s+/).filter(Boolean);
+  const result = new Set();
+  initials.forEach((i) => finals.forEach((f) => result.add(i + f)));
+  console.log(`<cartesian name="${name}">:`, [...result]);
+  namedSets.set(name, result);
+}
+
+// <syllableset name="syl1" set="@syl1raw" exclude="pe tei"></syllableset>
+// — (set ∪ include) − exclude, written to `name`. All three attributes
+// are optional (missing = empty); excluding something not present is not
+// an error. Each attribute's value may be literal syllables or one or
+// more @name references, but never a mix of the two within one attribute.
+function applySyllableSet(el, namedSets) {
+  const name = el.getAttribute('name');
+  if (!name) throw new Error('<syllableset> is missing a name attribute');
+  const base = resolveSetAttr(el.getAttribute('set'), namedSets);
+  const include = resolveSetAttr(el.getAttribute('include'), namedSets);
+  const exclude = resolveSetAttr(el.getAttribute('exclude'), namedSets);
+  const result = new Set([...base, ...include]);
+  exclude.forEach((x) => result.delete(x));
+  console.log(`<syllableset name="${name}">:`, [...result]);
+  namedSets.set(name, result);
+}
+
+// Builds a topic's named-set registry from <cartesian>/<syllableset> tags
+// living in its preamble, processed in document order so a later
+// definition can reference an earlier one's name. Any problem throws —
+// deliberately: a broken preamble means the whole topic can't be trusted
+// to hydrate correctly, so the whole topic load fails rather than
+// silently showing broken quizzes on some of its pages.
+function buildNamedSets(preamble) {
+  const namedSets = new Map();
+  const container = document.createElement('div');
+  container.innerHTML = preamble;
+  Array.from(container.children).forEach((el) => {
+    const tag = el.tagName.toLowerCase();
+    if (tag === 'cartesian') applyCartesian(el, namedSets);
+    else if (tag === 'syllableset') applySyllableSet(el, namedSets);
+  });
+  return namedSets;
 }
 
 // Fetched, split, and rendered through marked.js exactly once per file;
 // the cache holds the promise itself (not just its resolved value) so two
-// clicks before the first fetch finishes don't trigger a second one.
+// clicks before the first fetch finishes don't trigger a second one. A
+// rejected promise (a broken preamble) stays cached as rejected — a
+// genuinely broken topic doesn't get retried into working.
 const topicCache = new Map();
 
 function loadTopic(file) {
   if (!topicCache.has(file)) {
     const promise = fetch(`${LESSONS_DIR}/${file}`)
       .then((res) => res.text())
-      .then((raw) => ({
-        pages: splitPages(raw).map((page) => ({
-          title: page.title,
-          html: marked.parse(page.rawBody),
-        })),
-      }));
+      .then((raw) => {
+        const { preamble, pages } = splitPages(raw);
+        const namedSets = buildNamedSets(preamble);
+        return {
+          namedSets,
+          pages: pages.map((page) => ({
+            title: page.title,
+            html: marked.parse(page.rawBody),
+          })),
+        };
+      });
     topicCache.set(file, promise);
   }
   return topicCache.get(file);
@@ -365,7 +452,7 @@ function renderPageList(pageList, content, topic) {
     pageItem.textContent = page.title;
     pageItem.addEventListener('click', () => {
       content.innerHTML = page.html;
-      hydratePage(content);
+      hydratePage(content, topic.namedSets);
       setActivePage(pageItem);
     });
     pageList.appendChild(pageItem);
@@ -384,7 +471,12 @@ function renderTopicList(nav, content, entries) {
 
     topicItem.addEventListener('click', () => {
       if (pageList.children.length === 0) {
-        loadTopic(file).then((topic) => renderPageList(pageList, content, topic));
+        loadTopic(file)
+          .then((topic) => renderPageList(pageList, content, topic))
+          .catch((err) => {
+            pageList.textContent = `Preamble failed: ${err.message}`;
+            pageList.classList.add('tag-error');
+          });
       }
       pageList.hidden = !pageList.hidden;
       if (pageList.hidden && activePageItem && pageList.contains(activePageItem)) {

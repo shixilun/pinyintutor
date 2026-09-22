@@ -220,32 +220,37 @@ function playSyllable(syllable) {
   const base = `${rawsyl.replace(/ü/g, 'v')}${tone}`;
   let audio = audioCache.get(base);
   if (!audio) {
-    audio = loadAudio(base, MP3_DIR, WAV_DIR);
+    audio = loadAudio(base, SYLLABLE_AUDIO_SOURCES);
     audioCache.set(base, audio);
   }
   audio.currentTime = 0;
   audio.play().catch((err) => console.error(err));
 }
 
-// Prefer sound/mp3/; fall back to the old prototype's sound/wav/ when a
-// syllable is missing from the mp3 set. Swap MP3_DIR/WAV_DIR to flip which
-// source is authoritative.
 const MP3_DIR = 'sound/mp3';
 const WAV_DIR = 'sound/wav';
 
-// Generic mp3-then-wav loader: tries `${mp3Dir}/${base}.mp3` first, falls
-// back to `${wavDir}/${base}.wav` on error. Pass the same directory for
-// both to just try both extensions in one place (e.g. the <eg> family).
-function loadAudio(base, mp3Dir, wavDir) {
-  const audio = new Audio(`${mp3Dir}/${base}.mp3`);
-  let triedFallback = false;
+// Try order for pinyin syllable audio: reorder this list to change which
+// format/directory is tried first — nothing else needs to change.
+const SYLLABLE_AUDIO_SOURCES = [
+  { dir: WAV_DIR, ext: 'wav' },
+  { dir: MP3_DIR, ext: 'mp3' },
+];
+
+// Generic loader: tries each `{dir, ext}` source in order until one
+// actually plays, falling back to the next on error. `sources` controls
+// both the directories and the try order — nothing here is hardcoded.
+function loadAudio(base, sources) {
+  let index = 0;
+  const audio = new Audio(`${sources[0].dir}/${base}.${sources[0].ext}`);
   audio.addEventListener('error', () => {
-    if (triedFallback) {
-      console.error(`no audio file for ${base} (tried ${mp3Dir} and ${wavDir})`);
+    index++;
+    if (index >= sources.length) {
+      const tried = sources.map((s) => `${s.dir}/${base}.${s.ext}`).join(', ');
+      console.error(`no audio file for ${base} (tried ${tried})`);
       return;
     }
-    triedFallback = true;
-    audio.src = `${wavDir}/${base}.wav`;
+    audio.src = `${sources[index].dir}/${base}.${sources[index].ext}`;
     audio.play().catch(() => {});
   });
   return audio;

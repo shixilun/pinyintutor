@@ -225,11 +225,15 @@ function hydrateDictation(el, namedSets) {
 // arbitrary English-audio filenames, not derived from a syllable+tone.
 const egAudioCache = new Map();
 const EG_DIR = 'sound/eg';
+const EG_AUDIO_SOURCES = [
+  { dir: EG_DIR, ext: 'wav' },
+  { dir: EG_DIR, ext: 'mp3' },
+];
 
 function playEgSound(src) {
   let audio = egAudioCache.get(src);
   if (!audio) {
-    audio = loadAudio(src, EG_DIR, EG_DIR);
+    audio = loadAudio(src, EG_AUDIO_SOURCES);
     egAudioCache.set(src, audio);
   }
   audio.currentTime = 0;

@@ -4,9 +4,9 @@ Deferred decisions and roadmap items that don't belong in `CONTEXT.md` (glossary
 
 ## Audio source (in use, but quality flagged — may revisit)
 
-In use: [`davinfifield/mp3-chinese-pinyin-sound`](https://github.com/davinfifield/mp3-chinese-pinyin-sound) (1,632 MP3 clips, `sound/mp3/`, Unlicense/public domain), with 15 syllable+tone gaps in that set filled in from the old Perl/Tk prototype's `Sound/` folder as `.wav` (`sound/wav/`) — `script.js`'s `loadAudio()` tries `sound/mp3/` first, falls back to `sound/wav/`.
+In use: [`davinfifield/mp3-chinese-pinyin-sound`](https://github.com/davinfifield/mp3-chinese-pinyin-sound) (1,632 MP3 clips, `sound/mp3/`, Unlicense/public domain), with 15 syllable+tone gaps in that set filled in from the old Perl/Tk prototype's `Sound/` folder as `.wav` (`sound/wav/`). `script.js`'s `loadAudio(base, sources)` takes an ordered list of `{dir, ext}` sources and tries each in turn — `SYLLABLE_AUDIO_SOURCES` currently tries `.wav` first, `.mp3` second (same for `<eg>` snippet audio's `EG_AUDIO_SOURCES` in `lessons.js`).
 
-Now that lesson exercises (the dictation quiz) surface these clips in a "hear it cold, no visual cue" context, the recording quality reads as noticeably uneven across syllables — more apparent here than in the standalone entry boxes. May need to go searching for a better-quality audio source at some point; not blocking current work.
+Now that lesson exercises (the dictation quiz) surface these clips in a "hear it cold, no visual cue" context, the recording quality reads as noticeably uneven across syllables — more apparent here than in the standalone entry boxes. Specifically: the `.wav` recordings were made louder/more consistently than the `.mp3` set, whose volume varies a lot clip to clip — this is why `.wav` is currently tried first wherever both exist, not just for the 15 originally-missing gaps. May need to go searching for a better-quality audio source at some point; not blocking current work.
 
 ## Build phasing
 

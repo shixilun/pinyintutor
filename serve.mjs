@@ -22,6 +22,7 @@ const MIME_TYPES = {
   '.txt': 'text/plain',
   '.mp3': 'audio/mpeg',
   '.wav': 'audio/wav',
+  '.woff2': 'font/woff2',
 };
 
 http.createServer((req, res) => {

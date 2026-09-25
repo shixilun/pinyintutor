@@ -97,10 +97,15 @@ body {
   gap: 6px;
 }
 
+/* Extra top padding and a taller line-height than the default single-line
+   input box would use — needed so the pinyin webfont's ü + tone-mark
+   combination (e.g. "lǚ", the tallest stack: umlaut dots plus a caron)
+   isn't clipped at the top of the box. */
 .entry-input {
   width: 140px;
   font-size: 20px;
-  padding: 4px 6px;
+  padding: 8px 6px 6px;
+  line-height: 1.5;
   border: 1px solid #999;
   border-radius: 4px;
 }

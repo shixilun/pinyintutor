@@ -14,8 +14,12 @@ tones.
 **Note:** <egpy>ang</egpy> does _not_ rhyme with the English
 word <eg src="bang">bang</eg>.
 
-The syllable <py>ong</py> is just the sound <egpy>o</egpy> followed by
+The final <py>ong</py> is just the sound <egpy>o</egpy> followed by
 the sound <py>ng</py>.
+
+**Note:** <py>ong</py> never appears as a syllable by itself, but always with an initial; it is the 
+only such final introduced in this tutorial.  This is due to historical pronunciation changes among native 
+speakers.
 
 Click on the buttons to hear <py>ong</py> in the four tones.
 

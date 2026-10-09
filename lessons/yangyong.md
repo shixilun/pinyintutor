@@ -5,7 +5,7 @@ Click on the buttons below to hear <py>yang</py> in the four tones.
 <tonerows rawsyl="yang"></tonerows>
 
 The syllable <py>yong</py> is the sound of the syllable
-<egpy>yu</egpy> followed by an <egpy>ong</egpy> sound.
+<egpy>yi</egpy> followed by an <egpy>ong</egpy> sound.
 
 Click on the buttons below to hear <py>yong</py> in the four tones.
 

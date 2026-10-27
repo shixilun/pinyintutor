@@ -25,7 +25,7 @@ Click on the buttons to hear the pronunciations.  Notice how
 <py>un</py> almost sounds like two syllables pushed together, a
 <egpy>wu</egpy> sound and a short <egpy>en</egpy> sound.
 
-<listen syl="cǔn kùn"></listen>
+<listen syl="zhūn tún cǔn kùn"></listen>
 
 **Reason:** For some speakers, the <py>e</py> sound is very weak in
 the first and second tones after most initials.  Thus, the committee
@@ -40,7 +40,7 @@ The tone mark goes over the** <py>u</py>**.**
 Click on the buttons to hear the pronunciations.  Notice how an
 <py>o</py> sound sneaks in between the <py>i</py> and the <py>u</py>.
 
-<listen syl="liù diū"></listen>
+<listen syl="diū niú jiǔ liù"></listen>
 
 **Reason:**  For some speakers, the <py>o</py> sound is very weak
 in the first and second tones.  Thus, the committee decided to remove
@@ -53,7 +53,7 @@ The tone mark goes over the** <py>i</py>**.**
 Click on the buttons to hear the pronunciations.  Notice how an
 <py>e</py> sound sneaks in between the <py>u</py> and the <py>i</py>.
 
-<listen syl="guǐ tuī"></listen>
+<listen syl="chuī suí guǐ ruì"></listen>
 
 **Reason:** For some speakers, the <py>e</py> sound is very weak in
 the first and second tones after most initials.  Thus, the committee

@@ -31,23 +31,27 @@ quit at any time.
 
 <dictation rawsyl="@syl1"></dictation>
 
-## Listening Practice (2)
+## Spelling rules
 
 Some of the finals change spelling when following an initial
 consonant.  Here are the first two basic rules:
 
 **When silent**, <py>y</py> **and** <py>w</py> **disappear**
 
-_Examples:_ <py>p</py> + <egpy>yin</egpy> becomes <egpy>pin</egpy>;
-<py>t</py> + <egpy>wu</egpy> becomes <egpy>tu</egpy>.
+> <py>p</py> + <egpy>yin</egpy> &#x2192; <egpy>pin</egpy>
+
+> <py>t</py> + <egpy>wu</egpy> &#x2192; <egpy>tu</egpy>
 
 **When pronounced,** <py>y</py> **becomes** <py>i</py>
 **and** <py>w</py> **becomes** <py>u</py>
 
-_Examples:_ <py>t</py> + <egpy>yan</egpy> becomes <egpy>tian</egpy>;
-<py>k</py> + <egpy>wan</egpy> becomes <egpy>kuan</egpy>
+> <py>t</py> + <egpy>yan</egpy> &#x2192; <egpy>tian</egpy>
+
+> <py>k</py> + <egpy>wan</egpy> &#x2192; <egpy>kuan</egpy>
 
 We will see some other rules later.
+
+## Listening Practice (2)
 
 In the box below, click on the long button to hear the syllable.  Type
 what you hear in the box below, and first check your answer by

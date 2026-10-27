@@ -11,11 +11,11 @@ _d_ _g_.
 
 Pronounce the following pairs of English words:
 
-&nbsp;<eg src="pill">pill</eg>&nbsp;<eg src="spill">spill</eg>
+> <eg src="pill">pill</eg>&emsp;<eg src="spill">spill</eg>
 
-&nbsp;<eg src="till">till</eg>&nbsp;<eg src="still">still</eg>
+> <eg src="till">till</eg>&emsp;<eg src="still">still</eg>
 
-&nbsp;<eg src="kill">kill</eg>&nbsp;<eg src="skill">skill</eg>
+> <eg src="kill">kill</eg>&emsp;<eg src="skill">skill</eg>
 
 You might not have noticed it before, but the _p t k_ in the
 words in the first column are _not_ pronounced like the _p t
@@ -50,11 +50,11 @@ _unvoiced_.
 To see the difference, put your finger on your Adam's apple and say
 the following pairs of words:
 
-&nbsp;<eg src="bill">bill</eg>&nbsp;<eg src="spill">spill</eg>
+> <eg src="bill">bill</eg>&emsp;<eg src="spill">spill</eg>
 
-&nbsp;<eg src="dill">dill</eg>&nbsp;<eg src="still">still</eg>
+> <eg src="dill">dill</eg>&emsp;<eg src="still">still</eg>
 
-&nbsp;<eg src="gill">gill</eg>&nbsp;<eg src="skill">skill</eg>
+> <eg src="gill">gill</eg>&emsp;<eg src="skill">skill</eg>
 
 Your Adam's apple starts to vibrate on the consonants _b d g_ in
 the words in the first column, but it doesn't vibrate until you get to

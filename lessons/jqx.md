@@ -161,19 +161,19 @@ namely <egpy>yu</egpy>, <egpy>yue</egpy>, <egpy>yuan</egpy>, and
 **When one of** <py>yu yue yuan yun</py> **follows one of**
 <py>j q x</py>**, the** <py>y</py> **is dropped.**
 
-&nbsp;<py>j</py> + <egpy>yu</egpy> &#x2192; <egpy>ju</egpy>
+> <py>j</py> + <egpy>yu</egpy> &#x2192; <egpy>ju</egpy>
 
-&nbsp;<py>q</py> + <egpy>yuan</egpy> &#x2192; <egpy>quan</egpy>
+> <py>q</py> + <egpy>yuan</egpy> &#x2192; <egpy>quan</egpy>
 
-&nbsp;<py>x</py> + <egpy>yun</egpy> &#x2192; <egpy>xun</egpy>
+> <py>x</py> + <egpy>yun</egpy> &#x2192; <egpy>xun</egpy>
 
 Perhaps you can see the confusion this causes:
 
-&nbsp;<py>u</py> can come from <egpy>wu</egpy> or <egpy>yu</egpy>
+> <py>u</py> can come from <egpy>wu</egpy> or <egpy>yu</egpy>
 
-&nbsp;<py>uan</py> can come from <egpy>wan</egpy> or <egpy>yuan</egpy>
+> <py>uan</py> can come from <egpy>wan</egpy> or <egpy>yuan</egpy>
 
-&nbsp;<py>un</py> can come from <egpy>wen</egpy> or <egpy>yun</egpy>
+> <py>un</py> can come from <egpy>wen</egpy> or <egpy>yun</egpy>
 
 Some students first learning _pinyin_ will write
 <egpy>juan</egpy> when they hear <egpy>zhuan</egpy> and will write

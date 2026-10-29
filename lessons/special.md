@@ -1,11 +1,3 @@
-use utf8;
-
-@title = ("er", "zhi chi shi ri zi ci si", "Listening Practice",
-	  "Speaking Practice (1)", "Speaking Practice (2)",
-	  "Speaking Practice (3)");
-
-@callback = (
-
 ## er
 
 The letter combination <py>er</py> is special in _pinyin_.  It

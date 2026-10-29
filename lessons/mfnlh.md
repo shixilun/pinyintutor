@@ -4,10 +4,6 @@
 <cartesian name="sylh" i="h" f="a e ai ei ao ou an en ang eng ong u ua uo uai uan uang"></cartesian>
 <syllableset name="syl" include="@sylmnl @sylf @sylh lü lüe nü nüe"></syllableset>
 
-@title = ("Explanation (1)", "Explanation (2)", "Listening Practice", "Speaking Practice");
-
-@callback = (
-
 ## Explanation (1)
 
 The letters <py>m f n l</py> sound the same in English and Chinese.

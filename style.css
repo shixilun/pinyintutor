@@ -319,3 +319,29 @@ body {
 .lessons-content p {
   margin: 0 0 1.1em;
 }
+
+/* Markdown ~~strikethrough~~: thicker than the font's own hairline so a
+   struck-out spelling reads clearly as wrong. */
+.lessons-content del {
+  text-decoration-thickness: 2px;
+}
+
+/* Struck-out pinyin: Chrome on the Mac ignores the font's strikeout
+   position and puts the line too low, and a strikethrough's height
+   can't be set in CSS, but an underline's can. So the browser's line is
+   turned off for any <del> holding pinyin (non-pinyin text inside the
+   same ~~…~~ isn't struck), and the pinyin gets a 2px underline raised
+   to the middle of the lowercase letters: half the font's x-height
+   (547/1000 / 2 = 0.273em) above the baseline, less half the line.
+   It must stay a text decoration, not a drawn box: Chrome's built-in
+   dark mode recolors decorations with the text but treats a filled box
+   as background and leaves it dark. */
+.lessons-content del:has(.py) {
+  text-decoration: none;
+}
+
+.lessons-content del .py {
+  text-decoration: underline 2px;
+  text-decoration-skip-ink: none;
+  text-underline-offset: calc(-0.273em - 1px);
+}

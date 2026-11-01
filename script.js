@@ -72,6 +72,7 @@ function createSyllablePlayer() {
   playButton.type = 'button';
   playButton.className = 'player-play';
   playButton.setAttribute('aria-label', 'play');
+  playButton.title = 'play';
   playButton.textContent = '▶';
   playButton.addEventListener('click', () => {
     const value = entry.getValue();

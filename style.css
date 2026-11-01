@@ -97,6 +97,21 @@ body {
   gap: 6px;
 }
 
+/* Hear a Syllable boxes: the hint is the same fixed 300px as <dictation>'s
+   and <pysplitter>'s (the widest parse() hint line is ~290px), so the box
+   doesn't widen when a hint appears; the entry row is centered above it.
+   <dictation>'s answer player has the same 300px hint, so its row is
+   centered too (under the speaker button). */
+.box .syllable-player,
+.dictation-quiz .syllable-player {
+  align-items: center;
+}
+
+.box .entry-hint {
+  width: 300px;
+  max-width: none;
+}
+
 /* Extra top padding and a taller line-height than the default single-line
    input box would use — needed so the pinyin webfont's ü + tone-mark
    combination (e.g. "lǚ", the tallest stack: umlaut dots plus a caron)
@@ -126,10 +141,13 @@ body {
 /* Always occupies this height (reserved for ~2 lines, which covers the
    vast majority of hint text) whether or not there's currently a hint,
    so surrounding content doesn't shift when one appears/disappears. Only
-   an unusually long, multi-line hint would still cause any movement. */
+   an unusually long, multi-line hint would still cause any movement.
+   Lines are centered under the box; the font is the pinyin one (see
+   .py), since hints quote pinyin. */
 .entry-hint {
   max-width: 220px;
   min-height: 2.6em;
+  text-align: center;
   font-size: 13px;
   line-height: 1.3;
   color: #a33;
@@ -185,6 +203,16 @@ body {
   background: #fafafa;
 }
 
+/* Same as <pysplitter>'s hint: a fixed 300px wide (the widest parse()
+   hint line is ~290px, e.g. "every syllable must contain at least one
+   vowel") and 4 lines tall (the most any hint has, e.g. "zhyau"), so the
+   quiz never resizes when a hint appears. */
+.dictation-quiz .entry-hint {
+  width: 300px;
+  max-width: none;
+  min-height: 5.2em;
+}
+
 .quiz-score {
   font-size: 12px;
   color: #666;
@@ -194,6 +222,7 @@ body {
    syllables are displayed to the learner, not just <py>. Falls back to
    the earlier placeholder styling if the font fails to load. */
 .py,
+.entry-hint,
 .entry-input,
 .listen-btn {
   font-family: 'Adventor Pinyin', Arial, Helvetica, sans-serif;

@@ -13,8 +13,10 @@ const initials = {
     'zh': 1,
     'ch': 1,
     'sh': 1,
-};
-"bpmfdtnlgkhjqxžčšrzcs".split('').forEach((i) => {initials[i] = 1});
+    'hs': 1, // fake initial
+    'ts': 1, // fake initial
+    };
+"bpmfdtnlgkhjqxrzcs".split('').forEach((i) => {initials[i] = 1});
 
 const tones = {
     'a': "aāáǎà",
@@ -106,25 +108,25 @@ function parse(rawsyl) {
     if (!initials[initial]) return `a pinyin syllable can't begin with ${initial}`;
     if (parse[initial]) return parse[initial];
     if (parse[final]) return parse[final](initial);
-    return `The syllable ${rawsyl} does not exist in pinyin.`;
+    return `that syllable does not exist in pinyin`;
 }
 
 // some initials
 
-parse['hs'] = "hs does not exist in pinyin;\nperhaps you mean x";
+parse['hs'] = "hs does not exist in pinyin; perhaps you mean x";
 
-parse['ts'] = "ts does not exist in pinyin;\nperhaps you mean z or c";
+parse['ts'] = "ts does not exist in pinyin; perhaps you mean z or c";
 
 // the finals
 
 parse['a'] = (initial) => {
     switch (initial) {
     case 'j':
-        return "a cannot come directly after j;\nperhaps you mean zha or jia";
+        return "a cannot come directly after j; perhaps you mean zha or jia";
     case 'q':
-        return "a cannot come directly after q;\nperhaps you mean cha or qia";
+        return "a cannot come directly after q; perhaps you mean cha or qia";
     case 'x':
-        return "a cannot come directly after x;\nperhaps you mean sha or xia";
+        return "a cannot come directly after x; perhaps you mean sha or xia";
     case 'r':
         return "ra is not a syllable in pinyin";
     default:
@@ -135,15 +137,15 @@ parse['a'] = (initial) => {
 parse['ai'] = (initial) => {
     switch (initial) {
     case 'f':
-        return "fai is not a syllable in pinyin;\nperhaps you mean fei";
+        return "fai is not a syllable in pinyin; perhaps you mean fei";
     case 'r':
         return "rai is not a syllable in pinyin";
     case 'j':
-        return "ai cannot come after j;\nperhaps you mean zhai";
+        return "ai cannot come after j; perhaps you mean zhai";
     case 'q':
-        return "ai cannot come after q;\nperhaps you mean chai";
+        return "ai cannot come after q; perhaps you mean chai";
     case 'x':
-        return "ai cannot come after x;\nperhaps you mean shai";
+        return "ai cannot come after x; perhaps you mean shai";
     default:
         return "";
     }
@@ -152,11 +154,11 @@ parse['ai'] = (initial) => {
 parse['an'] = (initial) => {
     switch (initial) {
     case 'j':
-        return "an cannot come after j;\nperhaps you mean zhan";
+        return "an cannot come after j; perhaps you mean zhan";
     case 'q':
-        return "an cannot come after q;\nperhaps you mean chan";
+        return "an cannot come after q; perhaps you mean chan";
     case 'x':
-        return "an cannot come after x;\nperhaps you mean shan";
+        return "an cannot come after x; perhaps you mean shan";
     default:
         return "";
     }
@@ -165,11 +167,11 @@ parse['an'] = (initial) => {
 parse['ang'] = (initial) => {
     switch (initial) {
     case 'j':
-        return "ang cannot come directly after j;\nperhaps you mean zhang or jiang";
+        return "ang cannot come directly after j; perhaps you mean zhang or jiang";
     case 'q':
-        return "ang cannot come directly after q;\nperhaps you mean chang or qiang";
+        return "ang cannot come directly after q; perhaps you mean chang or qiang";
     case 'x':
-        return "ang cannot come directly after x;\nperhaps you mean shang or xiang";
+        return "ang cannot come directly after x; perhaps you mean shang or xiang";
     default:
         return "";
     }
@@ -180,11 +182,11 @@ parse['ao'] = (initial) => {
     case 'f':
         return "fao is not a syllable in pinyin";
     case 'j':
-        return "ao cannot come directly after j;\nperhaps you mean zhao or jiao";
+        return "ao cannot come directly after j; perhaps you mean zhao or jiao";
     case 'q':
-        return "ao cannot come directly after q;\nperhaps you mean chao or qiao";
+        return "ao cannot come directly after q; perhaps you mean chao or qiao";
     case 'x':
-        return "ao cannot come directly after x;\nperhaps you mean shao or xiao";
+        return "ao cannot come directly after x; perhaps you mean shao or xiao";
     default:
         return "";
     }
@@ -203,13 +205,13 @@ parse['e'] = (initial) => {
     case 'b':
     case 'p':
     case 'f':
-        return `${initial}e is not a syllable in pinyin;\nperhaps you mean ${initial}o`;
+        return `${initial}e is not a syllable in pinyin; perhaps you mean ${initial}o`;
     case 'j':
-        return "e cannot come directly after j;\nperhaps you mean zhe or jie";
+        return "e cannot come directly after j; perhaps you mean zhe or jie";
     case 'q':
-        return "e cannot come directly after q;\nperhaps you mean che or qie";
+        return "e cannot come directly after q; perhaps you mean che or qie";
     case 'x':
-        return "e cannot come directly after x;\nperhaps you mean she or xie";
+        return "e cannot come directly after x; perhaps you mean she or xie";
     default:
         return "";
     }
@@ -222,11 +224,11 @@ parse['ei'] = (initial) => {
     case 'ch':
         return `${initial}ei is not a syllable in pinyin`;
     case 'j':
-        return "ei cannot come after j;\nperhaps you mean zhei";
+        return "ei cannot come after j; perhaps you mean zhei";
     case 'q':
         return "ei cannot come after q";
     case 'x':
-        return "ei cannot come after x;\nperhaps you mean shei";
+        return "ei cannot come after x; perhaps you mean shei";
     default:
         return "";
     }
@@ -236,13 +238,13 @@ parse['en'] = (initial) => {
     switch (initial) {
     case 't':
     case 'l':
-        return `${initial}en is not a syllable in pinyin;\nperhaps you mean ${initial}eng`;
+        return `${initial}en is not a syllable in pinyin; perhaps you mean ${initial}eng`;
     case 'j':
-        return "en cannot come after j;\nperhaps you mean zhen";
+        return "en cannot come after j; perhaps you mean zhen";
     case 'q':
-        return "en cannot come after q;\nperhaps you mean chen";
+        return "en cannot come after q; perhaps you mean chen";
     case 'x':
-        return "en cannot come after x;\nperhaps you mean shen";
+        return "en cannot come after x; perhaps you mean shen";
     default:
         return "";
     }
@@ -251,11 +253,11 @@ parse['en'] = (initial) => {
 parse['eng'] = (initial) => {
     switch (initial) {
     case 'j':
-        return "eng cannot come after j;\nperhaps you mean zheng";
+        return "eng cannot come after j; perhaps you mean zheng";
     case 'q':
-        return "eng cannot come after q;\nperhaps you mean cheng";
+        return "eng cannot come after q; perhaps you mean cheng";
     case 'x':
-        return "eng cannot come after x;\nperhaps you mean sheng";
+        return "eng cannot come after x; perhaps you mean sheng";
     default:
         return "";
     }
@@ -267,7 +269,7 @@ parse['er'] = (initial) => {
     case 'zh':
     case 'ch':
     case 'sh':
-        return `${initial}er is not a syllable in pinyin;\nperhaps you mean ${initial}i`;
+        return `${initial}er is not a syllable in pinyin; perhaps you mean ${initial}i`;
     default:
         return `${initial}er is not a syllable in pinyin`;
     }
@@ -286,7 +288,7 @@ parse['i'] = (initial) => {
     case 'k':
         return `${initial}i is not a syllable in pinyin`;
     case 'h':
-        return "hi is not a syllable in pinyin;\nperhaps you mean xi";
+        return "hi is not a syllable in pinyin; perhaps you mean xi";
     default:
         return "";
     }
@@ -308,15 +310,15 @@ parse['ia'] = (initial) => {
         return `${initial}ia is not a syllable in pinyin`;
     case 'z':
     case 'zh':
-        return `ia cannot come after ${initial};\nperhaps you mean jia`;
+        return `ia cannot come after ${initial}; perhaps you mean jia`;
     case 'c':
     case 'ch':
-        return `ia cannot come after ${initial};\nperhaps you mean qia`;
+        return `ia cannot come after ${initial}; perhaps you mean qia`;
     case 's':
     case 'sh':
-        return `ia cannot come after ${initial};\nperhaps you mean xia`;
+        return `ia cannot come after ${initial}; perhaps you mean xia`;
     case 'h':
-        return "hia is not a syllable in pinyin;\nperhaps you mean xia";
+        return "hia is not a syllable in pinyin; perhaps you mean xia";
     default:
         return "";
     }
@@ -332,15 +334,15 @@ parse['ian'] = (initial) => {
         return `${initial}ian is not a syllable in pinyin`;
     case 'z':
     case 'zh':
-        return `ian cannot come after ${initial};\nperhaps you mean jian`;
+        return `ian cannot come after ${initial}; perhaps you mean jian`;
     case 'c':
     case 'ch':
-        return `ian cannot come after ${initial};\nperhaps you mean qian`;
+        return `ian cannot come after ${initial}; perhaps you mean qian`;
     case 's':
     case 'sh':
-        return `ian cannot come after ${initial};\nperhaps you mean xian`;
+        return `ian cannot come after ${initial}; perhaps you mean xian`;
     case 'h':
-        return "hian is not a syllable in pinyin;\nperhaps you mean xian";
+        return "hian is not a syllable in pinyin; perhaps you mean xian";
     default:
         return "";
     }
@@ -361,15 +363,15 @@ parse['iang'] = (initial) => {
         return `${initial}iang is not a syllable in pinyin`;
     case 'z':
     case 'zh':
-        return `iang cannot come after ${initial};\nperhaps you mean jiang`;
+        return `iang cannot come after ${initial}; perhaps you mean jiang`;
     case 'c':
     case 'ch':
-        return `iang cannot come after ${initial};\nperhaps you mean qiang`;
+        return `iang cannot come after ${initial}; perhaps you mean qiang`;
     case 's':
     case 'sh':
-        return `iang cannot come after ${initial};\nperhaps you mean xiang`;
+        return `iang cannot come after ${initial}; perhaps you mean xiang`;
     case 'h':
-        return "hiang is not a syllable in pinyin;\nperhaps you mean xiang";
+        return "hiang is not a syllable in pinyin; perhaps you mean xiang";
     default:
         return "";
     }
@@ -385,15 +387,15 @@ parse['iao'] = (initial) => {
         return `${initial}iao is not a syllable in pinyin`;
     case 'z':
     case 'zh':
-        return `iao cannot come after ${initial};\nperhaps you mean jiao`;
+        return `iao cannot come after ${initial}; perhaps you mean jiao`;
     case 'c':
     case 'ch':
-        return `iao cannot come after ${initial};\nperhaps you mean qiao`;
+        return `iao cannot come after ${initial}; perhaps you mean qiao`;
     case 's':
     case 'sh':
-        return `iao cannot come after ${initial};\nperhaps you mean xiao`;
+        return `iao cannot come after ${initial}; perhaps you mean xiao`;
     case 'h':
-        return "hiao is not a syllable in pinyin;\nperhaps you mean xiao";
+        return "hiao is not a syllable in pinyin; perhaps you mean xiao";
     default:
         return "";
     }
@@ -409,15 +411,15 @@ parse['iau'] = (initial) => {
         return `iau should be written iao, but ${initial}iao is not a syllable in pinyin`;
     case 'z':
     case 'zh':
-        return `iau should be written iao, but iao cannot come after ${initial};\nperhaps you mean jiao`;
+        return `iau should be written iao, but iao cannot come after ${initial}; perhaps you mean jiao`;
     case 'c':
     case 'ch':
-        return `iau should be written iao, but iao cannot come after ${initial};\nperhaps you mean qiao`;
+        return `iau should be written iao, but iao cannot come after ${initial}; perhaps you mean qiao`;
     case 's':
     case 'sh':
-        return `iau should be written iao, but iao cannot come after ${initial};\nperhaps you mean xiao`;
+        return `iau should be written iao, but iao cannot come after ${initial}; perhaps you mean xiao`;
     case 'h':
-        return "iau should be written iao, but hiao is not a syllable in pinyin;\nperhaps you mean xiao";
+        return "iau should be written iao, but hiao is not a syllable in pinyin; perhaps you mean xiao";
     default:
         return `${initial}iau should be written ${initial}iao`;
     }
@@ -433,15 +435,15 @@ parse['ie'] = (initial) => {
         return `${initial}ie is not a syllable in pinyin`;
     case 'z':
     case 'zh':
-        return `ie cannot come after ${initial};\nperhaps you mean jie`;
+        return `ie cannot come after ${initial}; perhaps you mean jie`;
     case 'c':
     case 'ch':
-        return `ie cannot come after ${initial};\nperhaps you mean qie`;
+        return `ie cannot come after ${initial}; perhaps you mean qie`;
     case 's':
     case 'sh':
-        return `ie cannot come after ${initial};\nperhaps you mean xie`;
+        return `ie cannot come after ${initial}; perhaps you mean xie`;
     case 'h':
-        return "hie is not a syllable in pinyin;\nperhaps you mean xie";
+        return "hie is not a syllable in pinyin; perhaps you mean xie";
     default:
         return "";
     }
@@ -457,15 +459,15 @@ parse['ien'] = (initial) => {
         return `ien should be written ian, but ${initial}ian is not a syllable in pinyin`;
     case 'z':
     case 'zh':
-        return `ien should be written ian, but ian cannot come after ${initial};\nperhaps you mean jian`;
+        return `ien should be written ian, but ian cannot come after ${initial}; perhaps you mean jian`;
     case 'c':
     case 'ch':
-        return `ien should be written ian, but ian cannot come after ${initial};\nperhaps you mean qian`;
+        return `ien should be written ian, but ian cannot come after ${initial}; perhaps you mean qian`;
     case 's':
     case 'sh':
-        return `ien should be written ian, but ian cannot come after ${initial};\nperhaps you mean xian`;
+        return `ien should be written ian, but ian cannot come after ${initial}; perhaps you mean xian`;
     case 'h':
-        return "ien should be written ian, but hian is not a syllable in pinyin;\nperhaps you mean xian";
+        return "ien should be written ian, but hian is not a syllable in pinyin; perhaps you mean xian";
     default:
         return `${initial}ien should be written ${initial}ian`;
     }
@@ -483,15 +485,15 @@ parse['in'] = (initial) => {
         return `${initial}in is not a syllable in pinyin`;
     case 'z':
     case 'zh':
-        return `in cannot come after ${initial};\nperhaps you mean jin`;
+        return `in cannot come after ${initial}; perhaps you mean jin`;
     case 'c':
     case 'ch':
-        return `in cannot come after ${initial};\nperhaps you mean qin`;
+        return `in cannot come after ${initial}; perhaps you mean qin`;
     case 's':
     case 'sh':
-        return `in cannot come after ${initial};\nperhaps you mean xin`;
+        return `in cannot come after ${initial}; perhaps you mean xin`;
     case 'h':
-        return "hin is not a syllable in pinyin;\nperhaps you mean xin";
+        return "hin is not a syllable in pinyin; perhaps you mean xin";
     default:
         return "";
     }
@@ -507,15 +509,15 @@ parse['ing'] = (initial) => {
         return `${initial}ing is not a syllable in pinyin`;
     case 'z':
     case 'zh':
-        return `ing cannot come after ${initial};\nperhaps you mean jing`;
+        return `ing cannot come after ${initial}; perhaps you mean jing`;
     case 'c':
     case 'ch':
-        return `ing cannot come after ${initial};\nperhaps you mean qing`;
+        return `ing cannot come after ${initial}; perhaps you mean qing`;
     case 's':
     case 'sh':
-        return `ing cannot come after ${initial};\nperhaps you mean xing`;
+        return `ing cannot come after ${initial}; perhaps you mean xing`;
     case 'h':
-        return "hing is not a syllable in pinyin;\nperhaps you mean xing";
+        return "hing is not a syllable in pinyin; perhaps you mean xing";
     default:
         return "";
     }
@@ -531,15 +533,15 @@ parse['iong'] = (initial) => {
         return "";
     case 'z':
     case 'zh':
-        return `iong cannot come after ${initial};\nperhaps you mean jiong`;
+        return `iong cannot come after ${initial}; perhaps you mean jiong`;
     case 'c':
     case 'ch':
-        return `iong cannot come after ${initial};\nperhaps you mean qiong`;
+        return `iong cannot come after ${initial}; perhaps you mean qiong`;
     case 's':
     case 'sh':
-        return `iong cannot come after ${initial};\nperhaps you mean xiong`;
+        return `iong cannot come after ${initial}; perhaps you mean xiong`;
     case 'h':
-        return "hiong is not a syllable in pinyin;\nperhaps you mean xiong";
+        return "hiong is not a syllable in pinyin; perhaps you mean xiong";
     default:
         return `${initial}iong is not a syllable in pinyin`;
     }
@@ -556,18 +558,18 @@ parse['iou'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `iou after consonant becomes iu;\n${initial}iou should be written ${initial}iu`;
+        return `iou after consonant becomes iu; ${initial}iou should be written ${initial}iu`;
     case 'z':
     case 'zh':
-        return `iou after consonant becomes iu, but iu cannot come after ${initial};\nperhaps you mean jiu`;
+        return `iou after consonant becomes iu, but iu cannot come after ${initial}; perhaps you mean jiu`;
     case 'c':
     case 'ch':
-        return `iou after consonant becomes iu, but iu cannot come after ${initial};\nperhaps you mean qiu`;
+        return `iou after consonant becomes iu, but iu cannot come after ${initial}; perhaps you mean qiu`;
     case 's':
     case 'sh':
-        return `iou after consonant becomes iu, but iu cannot come after ${initial};\nperhaps you mean xiu`;
+        return `iou after consonant becomes iu, but iu cannot come after ${initial}; perhaps you mean xiu`;
     case 'h':
-        return "iou after consonant becomes iu, but hiu is not a syllable in pinyin;\nperhaps you mean xiu";
+        return "iou after consonant becomes iu, but hiu is not a syllable in pinyin; perhaps you mean xiu";
     default:
         return `iou after consonant becomes iu, but ${initial}iu is not a syllable in pinyin`;
     }
@@ -590,7 +592,7 @@ parse['ir'] = (initial) => {
 parse['iu'] = (initial) => {
     switch (initial) {
     case '':
-        return "iu should be written you (a syllable can't begin with i;\nspecial spelling rule)";
+        return "iu should be written you (a syllable can't begin with i; special spelling rule)";
     case 'b':
     case 'p':
     case 'f':
@@ -600,15 +602,15 @@ parse['iu'] = (initial) => {
         return `${initial}iu is not a syllable in pinyin`;
     case 'z':
     case 'zh':
-        return `iu cannot come after ${initial};\nperhaps you mean jiu`;
+        return `iu cannot come after ${initial}; perhaps you mean jiu`;
     case 'c':
     case 'ch':
-        return `iu cannot come after ${initial};\nperhaps you mean qiu`;
+        return `iu cannot come after ${initial}; perhaps you mean qiu`;
     case 's':
     case 'sh':
-        return `iu cannot come after ${initial};\nperhaps you mean xiu`;
+        return `iu cannot come after ${initial}; perhaps you mean xiu`;
     case 'h':
-        return "hiu is not a syllable in pinyin;\nperhaps you mean xiu";
+        return "hiu is not a syllable in pinyin; perhaps you mean xiu";
     default:
         return "";
     }
@@ -630,13 +632,13 @@ parse['o'] = (initial) => {
     case 'g':
     case 'k':
     case 'h':
-        return `${initial}o is not a syllable in pinyin;\nperhaps you mean ${initial}ou or ${initial}uo`;
+        return `${initial}o is not a syllable in pinyin; perhaps you mean ${initial}ou or ${initial}uo`;
     case 'j':
-        return "o cannot come directly after j, and o should be ou;\nperhaps you mean zhou or jiu";
+        return "o cannot come directly after j, and o should be ou; perhaps you mean zhou or jiu";
     case 'q':
-        return "o cannot come directly after q, and o should be ou;\nperhaps you mean chou or qiu";
+        return "o cannot come directly after q, and o should be ou; perhaps you mean chou or qiu";
     case 'x':
-        return "o cannot come directly after x, and o should be ou;\nperhaps you mean shou or xiu";
+        return "o cannot come directly after x, and o should be ou; perhaps you mean shou or xiu";
     default:
         return "";
     }
@@ -644,18 +646,20 @@ parse['o'] = (initial) => {
 
 parse['ong'] = (initial) => {
     switch (initial) {
+    case '':
+        return "ong does not occur without an initial; perhaps you mean ang";
     case 'b':
     case 'p':
     case 'm':
     case 'f':
     case 'sh':
-        return `${initial}ong is not a syllable in pinyin;\nperhaps you mean ${initial}ang or ${initial}eng`;
+        return `${initial}ong is not a syllable in pinyin; perhaps you mean ${initial}ang or ${initial}eng`;
     case 'j':
-        return "ong cannot come directly after j;\nperhaps you mean zhong or jiong";
+        return "ong cannot come directly after j; perhaps you mean zhong or jiong";
     case 'q':
-        return "ong cannot come directly after q;\nperhaps you mean chong or qiong";
+        return "ong cannot come directly after q; perhaps you mean chong or qiong";
     case 'x':
-        return "ong cannot come directly after x;\nperhaps you mean shong or xiong";
+        return "ong cannot come directly after x; perhaps you mean shong or xiong";
     default:
         return "";
     }
@@ -664,20 +668,20 @@ parse['ong'] = (initial) => {
 parse['ou'] = (initial) => {
     switch (initial) {
     case 'b':
-        return "bou is not a syllable in pinyin;\nperhaps you mean bo";
+        return "bou is not a syllable in pinyin; perhaps you mean bo";
     case 'j':
-        return "ou cannot come directly after j;\nperhaps you mean zhou or jiu";
+        return "ou cannot come directly after j; perhaps you mean zhou or jiu";
     case 'q':
-        return "ou cannot come directly after q;\nperhaps you mean chou or qiu";
+        return "ou cannot come directly after q; perhaps you mean chou or qiu";
     case 'x':
-        return "ou cannot come directly after x;\nperhaps you mean shou or xiu";
+        return "ou cannot come directly after x; perhaps you mean shou or xiu";
     default:
         return "";
     }
 };
 
 parse['ow'] = () => {
-    return "ow does not exist in pinyin;\nperhaps you mean ao or ou";
+    return "ow does not exist in pinyin; perhaps you mean ao or ou";
 };
 
 parse['u'] = (initial) => {
@@ -706,11 +710,11 @@ parse['ua'] = (initial) => {
     case 's':
         return `${initial}ua is not a syllable in pinyin`;
     case 'j':
-        return "ua cannot come after j;\nperhaps you mean zhua";
+        return "ua cannot come after j; perhaps you mean zhua";
     case 'q':
-        return "ua cannot come after q;\nperhaps you mean chua";
+        return "ua cannot come after q; perhaps you mean chua";
     case 'x':
-        return "ua cannot come after x;\nperhaps you mean shua";
+        return "ua cannot come after x; perhaps you mean shua";
     default:
         return "";
     }
@@ -734,11 +738,11 @@ parse['uai'] = (initial) => {
     case 'r':
         return `${initial}uai is not a syllable in pinyin`;
     case 'j':
-        return "uai cannot come after j;\nperhaps you mean zhuai";
+        return "uai cannot come after j; perhaps you mean zhuai";
     case 'q':
-        return "uai cannot come after q;\nperhaps you mean chuai";
+        return "uai cannot come after q; perhaps you mean chuai";
     case 'x':
-        return "uai cannot come after x;\nperhaps you mean shuai";
+        return "uai cannot come after x; perhaps you mean shuai";
     default:
         return "";
     }
@@ -776,11 +780,11 @@ parse['uang'] = (initial) => {
     case 'r':
         return `${initial}uang is not a syllable in pinyin`;
     case 'j':
-        return "uang cannot come after j;\nperhaps you mean zhuang";
+        return "uang cannot come after j; perhaps you mean zhuang";
     case 'q':
-        return "uang cannot come after q;\nperhaps you mean chuang";
+        return "uang cannot come after q; perhaps you mean chuang";
     case 'x':
-        return "uang cannot come after x;\nperhaps you mean shuang";
+        return "uang cannot come after x; perhaps you mean shuang";
     default:
         return "";
     }
@@ -793,21 +797,21 @@ parse['ue'] = (initial) => {
     case 'x':
         return "";
     case 'z':
-        return "zue is not a syllable in pinyin;\nperhaps you mean zui or jue";
+        return "zue is not a syllable in pinyin; perhaps you mean zui or jue";
     case 'c':
-        return "cue is not a syllable in pinyin;\nperhaps you mean cui or que";
+        return "cue is not a syllable in pinyin; perhaps you mean cui or que";
     case 's':
-        return "sue is not a syllable in pinyin;\nperhaps you mean sui or xue";
+        return "sue is not a syllable in pinyin; perhaps you mean sui or xue";
     case 'zh':
-        return "zhue is not a syllable in pinyin;\nperhaps you mean zhui or jue";
+        return "zhue is not a syllable in pinyin; perhaps you mean zhui or jue";
     case 'ch':
-        return "chue is not a syllable in pinyin;\nperhaps you mean chui or que";
+        return "chue is not a syllable in pinyin; perhaps you mean chui or que";
     case 'sh':
-        return "shue is not a syllable in pinyin;\nperhaps you mean shui or xue";
+        return "shue is not a syllable in pinyin; perhaps you mean shui or xue";
     case 'r':
-        return "rue is not a syllable in pinyin;\nperhaps you mean rui";
+        return "rue is not a syllable in pinyin; perhaps you mean rui";
     default:
-        return `${initial} is not a syllable in pinyin`;
+        return `${initial}ue is not a syllable in pinyin`;
     }
 };
 
@@ -827,13 +831,13 @@ parse['uei'] = (initial) => {
     case 'g':
     case 'k':
     case 'h':
-        return `uei after consonant becomes ui;\n${initial}uei should be written ${initial}ui`;
+        return `uei after consonant becomes ui; ${initial}uei should be written ${initial}ui`;
     case 'j':
-        return `uei after consonant becomes ui, but ui cannot come after ${initial};\nperhaps you mean zhui`;
+        return `uei after consonant becomes ui, but ui cannot come after ${initial}; perhaps you mean zhui`;
     case 'q':
-        return `uei after consonant becomes ui, but ui cannot come after ${initial};\nperhaps you mean chui`;
+        return `uei after consonant becomes ui, but ui cannot come after ${initial}; perhaps you mean chui`;
     case 'x':
-        return `uei after consonant becomes ui, but ui cannot come after ${initial};\nperhaps you mean shui`;
+        return `uei after consonant becomes ui, but ui cannot come after ${initial}; perhaps you mean shui`;
     default:
         return `uei after consonant becomes ui, but ${initial}ui is not a syllable in pinyin`;
     }
@@ -852,9 +856,9 @@ parse['uen'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `${initial}uen is not a syllable in pinyin;\nperhaps you mean ${initial}uan`;
+        return `${initial}uen is not a syllable in pinyin; perhaps you mean ${initial}uan`;
     default:
-        return `uen after consonant becomes un;\n${initial}uen should be written ${initial}un`;
+        return `uen after consonant becomes un; ${initial}uen should be written ${initial}un`;
     }
 };
 
@@ -868,13 +872,13 @@ parse['ueng'] = (initial) => {
 };
 
 parse['uh'] = () => {
-    return "uh does not exist in pinyin;\nperhaps you mean e";
+    return "uh does not exist in pinyin; perhaps you mean e";
 };
 
 parse['ui'] = (initial) => {
     switch (initial) {
     case '':
-        return "ui should be written wei (a syllable can't begin with u;\nspecial spelling rule)";
+        return "ui should be written wei (a syllable can't begin with u; special spelling rule)";
     case 'b':
     case 'p':
     case 'm':
@@ -883,11 +887,11 @@ parse['ui'] = (initial) => {
     case 'l':
         return `${initial}ui is not a syllable in pinyin`;
     case 'j':
-        return `ui cannot come after ${initial};\nperhaps you mean zhui`;
+        return `ui cannot come after ${initial}; perhaps you mean zhui`;
     case 'q':
-        return `ui cannot come after ${initial};\nperhaps you mean chui`;
+        return `ui cannot come after ${initial}; perhaps you mean chui`;
     case 'x':
-        return `ui cannot come after ${initial};\nperhaps you mean shui`;
+        return `ui cannot come after ${initial}; perhaps you mean shui`;
     default:
         return "";
     }
@@ -896,7 +900,7 @@ parse['ui'] = (initial) => {
 parse['un'] = (initial) => {
     switch (initial) {
     case '':
-        return "un should be written wen (a syllable can't begin with u;\nspecial spelling rule)";
+        return "un should be written wen (a syllable can't begin with u; special spelling rule)";
     case 'b':
     case 'p':
     case 'm':
@@ -929,13 +933,13 @@ parse['uo'] = (initial) => {
     case 'p':
     case 'm':
     case 'f':
-        return `${initial}uo is written ${initial}o;\nspecial spelling rule`;
+        return `${initial}uo is written ${initial}o; special spelling rule`;
     case 'j':
-        return "uo cannot come after j;\nperhaps you mean zhuo";
+        return "uo cannot come after j; perhaps you mean zhuo";
     case 'q':
-        return "uo cannot come after q;\nperhaps you mean chuo";
+        return "uo cannot come after q; perhaps you mean chuo";
     case 'x':
-        return "uo cannot come after x;\nperhaps you mean shuo";
+        return "uo cannot come after x; perhaps you mean shuo";
     default:
         return "";
     }
@@ -948,7 +952,7 @@ parse['ü'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `ü loses its umlaut after ${initial};\nperhaps you mean ${initial}u`;
+        return `ü loses its umlaut after ${initial}; perhaps you mean ${initial}u`;
     case 'n':
     case 'l':
         return "";
@@ -960,11 +964,11 @@ parse['ü'] = (initial) => {
 parse['üan'] = (initial) => {
     switch (initial) {
     case '':
-        return "üan should be written yuan (a syllable beginning with ü changes it to yuan)";
+        return "üan should be written yuan (a syllable beginning with ü changes it to yu)";
     case 'j':
     case 'q':
     case 'x':
-        return `ü loses its umlaut after ${initial};\nperhaps you mean ${initial}uan`;
+        return `ü loses its umlaut after ${initial}; perhaps you mean ${initial}uan`;
     default:
         return `${initial}üan is not a syllable in pinyin`;
     }
@@ -977,7 +981,7 @@ parse['üe'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `ü loses its umlaut after ${initial};\nperhaps you mean ${initial}ue`;
+        return `ü loses its umlaut after ${initial}; perhaps you mean ${initial}ue`;
     case 'n':
     case 'l':
         return "";
@@ -993,7 +997,7 @@ parse['ün'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `ü loses its umlaut after ${initial};\nperhaps you mean ${initial}un`;
+        return `ü loses its umlaut after ${initial}; perhaps you mean ${initial}un`;
     default:
         return `${initial}ün is not a syllable in pinyin`;
     }
@@ -1012,13 +1016,13 @@ parse['wa'] = (initial) => {
     case 'ch':
     case 's':
     case 'sh':
-        return `wa becomes ua after consonant;\n${initial}wa should be written ${initial}ua`;
+        return `wa becomes ua after consonant; ${initial}wa should be written ${initial}ua`;
     case 'j':
-        return "wa becomes ua after consonant, but ua cannot come after j;\nperhaps you mean zhua";
+        return "wa becomes ua after consonant, but ua cannot come after j; perhaps you mean zhua";
     case 'q':
-        return "wa becomes ua after consonant, but ua cannot come after q;\nperhaps you mean chua";
+        return "wa becomes ua after consonant, but ua cannot come after q; perhaps you mean chua";
     case 'x':
-        return "wa becomes ua after consonant, but ua cannot come after x;\nperhaps you mean shua";
+        return "wa becomes ua after consonant, but ua cannot come after x; perhaps you mean shua";
     default:
         return `wa becomes ua after consonant, but ${initial}ua is not a syllable in pinyin`;
     }
@@ -1042,13 +1046,13 @@ parse['wai'] = (initial) => {
     case 'r':
         return `wai becomes uai after consonant, but ${initial}uai is not a syllable in pinyin`;
     case 'j':
-        return "wai becomes uai after consonant, but uai cannot come after j;\nperhaps you mean zhuai";
+        return "wai becomes uai after consonant, but uai cannot come after j; perhaps you mean zhuai";
     case 'q':
-        return "wai becomes uai after consonant, but uai cannot come after q;\nperhaps you mean chuai";
+        return "wai becomes uai after consonant, but uai cannot come after q; perhaps you mean chuai";
     case 'x':
-        return "wai becomes uai after consonant, but uai cannot come after x;\nperhaps you mean shuai";
+        return "wai becomes uai after consonant, but uai cannot come after x; perhaps you mean shuai";
     default:
-        return `wai becomes uai after consonant;\n${initial}wai should be written ${initial}uai`;
+        return `wai becomes uai after consonant; ${initial}wai should be written ${initial}uai`;
     }
 };
 
@@ -1062,7 +1066,7 @@ parse['wan'] = (initial) => {
     case 'f':
         return `wan becomes uan after consonant, but ${initial}uan is not a syllable in pinyin`;
     default:
-        return `wan becomes uan after consonant;\n${initial}wan should be written ${initial}uan`;
+        return `wan becomes uan after consonant; ${initial}wan should be written ${initial}uan`;
     }
 };
 
@@ -1084,13 +1088,13 @@ parse['wang'] = (initial) => {
     case 'r':
         return `wang becomes uang after consonant, but ${initial}uang is not a syllable in pinyin`;
     case 'j':
-        return "wang becomes uang after consonant, but uang cannot come after j;\nperhaps you mean zhuang";
+        return "wang becomes uang after consonant, but uang cannot come after j; perhaps you mean zhuang";
     case 'q':
-        return "wang becomes uang after consonant, but uang cannot come after q;\nperhaps you mean chuang";
+        return "wang becomes uang after consonant, but uang cannot come after q; perhaps you mean chuang";
     case 'x':
-        return "wang becomes uang after consonant, but uang cannot come after x;\nperhaps you mean shuang";
+        return "wang becomes uang after consonant, but uang cannot come after x; perhaps you mean shuang";
     default:
-        return `wang becomes uang after consonant;\n${initial}wang should be written ${initial}uang`;
+        return `wang becomes uang after consonant; ${initial}wang should be written ${initial}uang`;
     }
 };
 
@@ -1110,13 +1114,13 @@ parse['wei'] = (initial) => {
     case 'g':
     case 'k':
     case 'h':
-        return `wei after consonant becomes ui;\n${initial}wei should be written ${initial}ui`;
+        return `wei after consonant becomes ui; ${initial}wei should be written ${initial}ui`;
     case 'j':
-        return `wei after consonant becomes ui, but ui cannot come after ${initial};\nperhaps you mean zhui`;
+        return `wei after consonant becomes ui, but ui cannot come after ${initial}; perhaps you mean zhui`;
     case 'q':
-        return `wei after consonant becomes ui, but ui cannot come after ${initial};\nperhaps you mean chui`;
+        return `wei after consonant becomes ui, but ui cannot come after ${initial}; perhaps you mean chui`;
     case 'x':
-        return `wei after consonant becomes ui, but ui cannot come after ${initial};\nperhaps you mean shui`;
+        return `wei after consonant becomes ui, but ui cannot come after ${initial}; perhaps you mean shui`;
     default:
         return `wei after consonant becomes ui, but ${initial}ui is not a syllable in pinyin`;
     }
@@ -1135,9 +1139,9 @@ parse['wen'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `wen after consonant becomes un, but ${initial}uen is not a syllable in pinyin;\nperhaps you mean ${initial}uan`;
+        return `wen after consonant becomes un, but ${initial}uen is not a syllable in pinyin; perhaps you mean ${initial}uan`;
     default:
-        return `wen after consonant becomes un;\n${initial}wen should be written ${initial}un`;
+        return `wen after consonant becomes un; ${initial}wen should be written ${initial}un`;
     }
 };
 
@@ -1158,15 +1162,15 @@ parse['wo'] = (initial) => {
     case 'p':
     case 'm':
     case 'f':
-        return `wo becomes uo after consonant, but ${initial}uo is written ${initial}o (special case)`;
+        return `wo becomes uo after consonant, but ${initial}uo is written ${initial}o; special spelling rule`;
     case 'j':
-        return "wo becomes uo after consonant, but uo cannot come after j;\nperhaps you mean zhuo";
+        return "wo becomes uo after consonant, but uo cannot come after j; perhaps you mean zhuo";
     case 'q':
-        return "wo becomes uo after consonant, but uo cannot come after q;\nperhaps you mean chuo";
+        return "wo becomes uo after consonant, but uo cannot come after q; perhaps you mean chuo";
     case 'x':
-        return "wo becomes uo after consonant, but uo cannot come after x;\nperhaps you mean shuo";
+        return "wo becomes uo after consonant, but uo cannot come after x; perhaps you mean shuo";
     default:
-        return `wo becomes uo after consonant;\n${initial}wo should be written ${initial}uo`;
+        return `wo becomes uo after consonant; ${initial}wo should be written ${initial}uo`;
     }
 };
 
@@ -1186,15 +1190,15 @@ parse['wong'] = (initial) => {
     case 'c':
     case 's':
     case 'r':
-        return `wong does not exist in pinyin;\nuang is possible after consonants, but ${initial}uang is not a syllable in pinyin`;
+        return `wong does not exist in pinyin; uang is possible after consonants, but ${initial}uang is not a syllable in pinyin`;
     case 'j':
-        return "wong does not exist in pinyin;\nuang is possible after consonants, but uang cannot come after j;\nperhaps you mean zhuang";
+        return "wong does not exist in pinyin; uang is possible after consonants, but uang cannot come after j; perhaps you mean zhuang";
     case 'q':
-        return "wong does not exist in pinyin;\nuang is possible after consonants, but uang cannot come after q;\nperhaps you mean chuang";
+        return "wong does not exist in pinyin; uang is possible after consonants, but uang cannot come after q; perhaps you mean chuang";
     case 'x':
-        return "wong does not exist in pinyin;\nuang is possible after consonants, but uang cannot come after x;\nperhaps you mean shuang";
+        return "wong does not exist in pinyin; uang is possible after consonants, but uang cannot come after x; perhaps you mean shuang";
     default:
-        return `wong does not exist in pinyin;\nuang is possible after consonants; perhaps you mean ${initial}uang`;
+        return `wong does not exist in pinyin; uang is possible after consonants; perhaps you mean ${initial}uang`;
     }
 };
 
@@ -1203,7 +1207,7 @@ parse['wu'] = (initial) => {
     case '':
         return "";
     default:
-        return `${initial}wu is not a syllable in pinyin;\nperhaps you have an extra w`;
+        return `${initial}wu is not a syllable in pinyin; perhaps you have an extra w`;
     }
 };
 
@@ -1212,7 +1216,7 @@ parse['wun'] = (initial) => {
     case '':
         return "wun should be written wen";
     default:
-        return `${initial}wun is not a syllable in pinyin;\nperhaps you have an extra w`;
+        return `${initial}wun is not a syllable in pinyin; perhaps you have an extra w`;
     }
 };
 
@@ -1224,18 +1228,18 @@ parse['ya'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `ya becomes ia after consonant;\n${initial}ya should be written ${initial}ia`;
+        return `ya becomes ia after consonant; ${initial}ya should be written ${initial}ia`;
     case 'z':
     case 'zh':
-        return `ya becomes ia after consonant, but ia cannot come after ${initial};\nperhaps you mean jia`;
+        return `ya becomes ia after consonant, but ia cannot come after ${initial}; perhaps you mean jia`;
     case 'c':
     case 'ch':
-        return `ya becomes ia after consonant, but ia cannot come after ${initial};\nperhaps you mean qia`;
+        return `ya becomes ia after consonant, but ia cannot come after ${initial}; perhaps you mean qia`;
     case 's':
     case 'sh':
-        return `ya becomes ia after consonant, but ia cannot come after ${initial};\nperhaps you mean xia`;
+        return `ya becomes ia after consonant, but ia cannot come after ${initial}; perhaps you mean xia`;
     case 'h':
-        return "ya becomes ia after consonant, but hia is not a syllable in pinyin;\nperhaps you mean xia";
+        return "ya becomes ia after consonant, but hia is not a syllable in pinyin; perhaps you mean xia";
     default:
         return `ya becomes ia after consonant, but ${initial}ia is not a syllable in pinyin`;
     }
@@ -1255,18 +1259,18 @@ parse['yan'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `yan becomes ian after consonant;\n${initial}yan should be written ${initial}ian`;
+        return `yan becomes ian after consonant; ${initial}yan should be written ${initial}ian`;
     case 'z':
     case 'zh':
-        return `yan becomes ian after consonant, but ian cannot come after ${initial};\nperhaps you mean jian`;
+        return `yan becomes ian after consonant, but ian cannot come after ${initial}; perhaps you mean jian`;
     case 'c':
     case 'ch':
-        return `yan becomes ian after consonant, but ian cannot come after ${initial};\nperhaps you mean qian`;
+        return `yan becomes ian after consonant, but ian cannot come after ${initial}; perhaps you mean qian`;
     case 's':
     case 'sh':
-        return `yan becomes ian after consonant, but ian cannot come after ${initial};\nperhaps you mean xian`;
+        return `yan becomes ian after consonant, but ian cannot come after ${initial}; perhaps you mean xian`;
     case 'h':
-        return "yan becomes ian after consonant, but hian is not a syllable in pinyin;\nperhaps you mean xian";
+        return "yan becomes ian after consonant, but hian is not a syllable in pinyin; perhaps you mean xian";
     default:
         return `yan becomes ian after consonant, but ${initial}ian is not a syllable in pinyin`;
     }
@@ -1281,18 +1285,18 @@ parse['yang'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `yang becomes iang after consonant;\n${initial}yang should be written ${initial}iang`;
+        return `yang becomes iang after consonant; ${initial}yang should be written ${initial}iang`;
     case 'z':
     case 'zh':
-        return `yang becomes iang after consonant, but iang cannot come after ${initial};\nperhaps you mean jiang`;
+        return `yang becomes iang after consonant, but iang cannot come after ${initial}; perhaps you mean jiang`;
     case 'c':
     case 'ch':
-        return `yang becomes iang after consonant, but iang cannot come after ${initial};\nperhaps you mean qiang`;
+        return `yang becomes iang after consonant, but iang cannot come after ${initial}; perhaps you mean qiang`;
     case 's':
     case 'sh':
-        return `yang becomes iang after consonant, but iang cannot come after ${initial};\nperhaps you mean xiang`;
+        return `yang becomes iang after consonant, but iang cannot come after ${initial}; perhaps you mean xiang`;
     case 'h':
-        return "yang becomes iang after consonant, but hiang is not a syllable in pinyin;\nperhaps you mean xiang";
+        return "yang becomes iang after consonant, but hiang is not a syllable in pinyin; perhaps you mean xiang";
     default:
         return `yang becomes iang after consonant, but ${initial}iang is not a syllable in pinyin`;
     }
@@ -1312,18 +1316,18 @@ parse['yao'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `yao becomes iao after consonant;\n${initial}yao should be written ${initial}iao`;
+        return `yao becomes iao after consonant; ${initial}yao should be written ${initial}iao`;
     case 'z':
     case 'zh':
-        return `yao becomes iao after consonant, but iao cannot come after ${initial};\nperhaps you mean jiao`;
+        return `yao becomes iao after consonant, but iao cannot come after ${initial}; perhaps you mean jiao`;
     case 'c':
     case 'ch':
-        return `yao becomes iao after consonant, but iao cannot come after ${initial};\nperhaps you mean qiao`;
+        return `yao becomes iao after consonant, but iao cannot come after ${initial}; perhaps you mean qiao`;
     case 's':
     case 'sh':
-        return `yao becomes iao after consonant, but iao cannot come after ${initial};\nperhaps you mean xiao`;
+        return `yao becomes iao after consonant, but iao cannot come after ${initial}; perhaps you mean xiao`;
     case 'h':
-        return "yao becomes iao after consonant, but hiao is not a syllable in pinyin;\nperhaps you mean xiao";
+        return "yao becomes iao after consonant, but hiao is not a syllable in pinyin; perhaps you mean xiao";
     default:
         return `yao becomes iao after consonant, but ${initial}iao is not a syllable in pinyin`;
     }
@@ -1343,18 +1347,18 @@ parse['yau'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `yau should be written yao, which becomes iao after consonant;\n${initial}yao should be written ${initial}iao`;
+        return `yau should be written yao, which becomes iao after consonant; ${initial}yao should be written ${initial}iao`;
     case 'z':
     case 'zh':
-        return `yau should be written yao, which becomes iao after consonant, but iao cannot come after ${initial};\nperhaps you mean jiao`;
+        return `yau should be written yao, which becomes iao after consonant, but iao cannot come after ${initial}; perhaps you mean jiao`;
     case 'c':
     case 'ch':
-        return `yau should be written yao, which becomes iao after consonant, but iao cannot come after ${initial};\nperhaps you mean qiao`;
+        return `yau should be written yao, which becomes iao after consonant, but iao cannot come after ${initial}; perhaps you mean qiao`;
     case 's':
     case 'sh':
-        return `yau should be written yao, which becomes iao after consonant, but iao cannot come after ${initial};\nperhaps you mean xiao`;
+        return `yau should be written yao, which becomes iao after consonant, but iao cannot come after ${initial}; perhaps you mean xiao`;
     case 'h':
-        return "yau should be written yao, which becomes iao after consonant, but hiao is not a syllable in pinyin;\nperhaps you mean xiao";
+        return "yau should be written yao, which becomes iao after consonant, but hiao is not a syllable in pinyin; perhaps you mean xiao";
     default:
         return `yau should be written yao, which becomes iao after consonant, but ${initial}iao is not a syllable in pinyin`;
     }
@@ -1374,18 +1378,18 @@ parse['ye'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `ye becomes ie after consonant;\n${initial}ye should be written ${initial}ie`;
+        return `ye becomes ie after consonant; ${initial}ye should be written ${initial}ie`;
     case 'z':
     case 'zh':
-        return `ye becomes ie after consonant, but ie cannot come after ${initial};\nperhaps you mean jie`;
+        return `ye becomes ie after consonant, but ie cannot come after ${initial}; perhaps you mean jie`;
     case 'c':
     case 'ch':
-        return `ye becomes ie after consonant, but ie cannot come after ${initial};\nperhaps you mean qie`;
+        return `ye becomes ie after consonant, but ie cannot come after ${initial}; perhaps you mean qie`;
     case 's':
     case 'sh':
-        return `ye becomes ie after consonant, but ie cannot come after ${initial};\nperhaps you mean xie`;
+        return `ye becomes ie after consonant, but ie cannot come after ${initial}; perhaps you mean xie`;
     case 'h':
-        return "ye becomes ie after consonant, but hie is not a syllable in pinyin;\nperhaps you mean xie";
+        return "ye becomes ie after consonant, but hie is not a syllable in pinyin; perhaps you mean xie";
     default:
         return `ye becomes ie after consonant, but ${initial}ie is not a syllable in pinyin`;
     }
@@ -1394,7 +1398,7 @@ parse['ye'] = (initial) => {
 parse['yen'] = (initial) => {
     switch (initial) {
     case '':
-        return "yen is not a syllable in pinyin;\nperhaps you mean yan";
+        return "yen is not a syllable in pinyin; perhaps you mean yan";
     case 'b':
     case 'p':
     case 'm':
@@ -1405,18 +1409,18 @@ parse['yen'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `yen does not exist in pinyin;\nian is possible after consonants; perhaps you mean ${initial}ian`;
+        return `yen does not exist in pinyin; ian is possible after consonants; perhaps you mean ${initial}ian`;
     case 'z':
     case 'zh':
-        return `yen does not exist in pinyin;\nian is possible after consonants, but not after ${initial};\nperhaps you mean jian`;
+        return `yen does not exist in pinyin; ian is possible after consonants, but not after ${initial}; perhaps you mean jian`;
     case 'c':
     case 'ch':
-        return `yen does not exist in pinyin;\nian is possible after consonants, but not after ${initial};\nperhaps you mean qian`;
+        return `yen does not exist in pinyin; ian is possible after consonants, but not after ${initial}; perhaps you mean qian`;
     case 's':
     case 'sh':
-        return `yen does not exist in pinyin;\nian is possible after consonants, but not after ${initial};\nperhaps you mean xian`;
+        return `yen does not exist in pinyin; ian is possible after consonants, but not after ${initial}; perhaps you mean xian`;
     case 'h':
-        return "yen does not exist in pinyin;\nian is possible after consonants, but hian is not a syllable; perhaps you mean xian";
+        return "yen does not exist in pinyin; ian is possible after consonants, but hian is not a syllable; perhaps you mean xian";
     }
 };
 
@@ -1425,7 +1429,7 @@ parse['yi'] = (initial) => {
     case '':
         return "";
     default:
-        return `${initial}yi is not a syllable in pinyin;\nperhaps you have an extra y`;
+        return `${initial}yi is not a syllable in pinyin; perhaps you have an extra y`;
     }
 };
 
@@ -1434,7 +1438,7 @@ parse['yin'] = (initial) => {
     case '':
         return "";
     default:
-        return `${initial}yin is not a syllable in pinyin;\nperhaps you have an extra y`;
+        return `${initial}yin is not a syllable in pinyin; perhaps you have an extra y`;
     }
 };
 
@@ -1443,7 +1447,7 @@ parse['ying'] = (initial) => {
     case '':
         return "";
     default:
-        return `${initial}ying is not a syllable in pinyin;\nperhaps you have an extra y`;
+        return `${initial}ying is not a syllable in pinyin; perhaps you have an extra y`;
     }
 };
 
@@ -1454,18 +1458,18 @@ parse['yong'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `yong becomes iong after consonant;\n${initial}yong should be written ${initial}iong`;
+        return `yong becomes iong after consonant; ${initial}yong should be written ${initial}iong`;
     case 'z':
     case 'zh':
-        return `yong becomes iong after consonant, but iong cannot come after ${initial};\nperhaps you mean jiong`;
+        return `yong becomes iong after consonant, but iong cannot come after ${initial}; perhaps you mean jiong`;
     case 'c':
     case 'ch':
-        return `yong becomes iong after consonant, but iong cannot come after ${initial};\nperhaps you mean qiong`;
+        return `yong becomes iong after consonant, but iong cannot come after ${initial}; perhaps you mean qiong`;
     case 's':
     case 'sh':
-        return `yong becomes iong after consonant, but iong cannot come after ${initial};\nperhaps you mean xiong`;
+        return `yong becomes iong after consonant, but iong cannot come after ${initial}; perhaps you mean xiong`;
     case 'h':
-        return "yong becomes iong after consonant, but hiong is not a syllable in pinyin;\nperhaps you mean xiong";
+        return "yong becomes iong after consonant, but hiong is not a syllable in pinyin; perhaps you mean xiong";
     default:
         return `yong becomes iong after consonant, but ${initial}iong is not a syllable in pinyin`;
     }
@@ -1482,18 +1486,18 @@ parse['you'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `you becomes iu after consonant;\n${initial}you should be written ${initial}iu`;
+        return `you becomes iu after consonant; ${initial}you should be written ${initial}iu`;
     case 'z':
     case 'zh':
-        return `you becomes iu after consonant, but iu cannot come after ${initial};\nperhaps you mean jiu`;
+        return `you becomes iu after consonant, but iu cannot come after ${initial}; perhaps you mean jiu`;
     case 'c':
     case 'ch':
-        return `you becomes iu after consonant, but iu cannot come after ${initial};\nperhaps you mean qiu`;
+        return `you becomes iu after consonant, but iu cannot come after ${initial}; perhaps you mean qiu`;
     case 's':
     case 'sh':
-        return `you becomes iu after consonant, but iu cannot come after ${initial};\nperhaps you mean xiu`;
+        return `you becomes iu after consonant, but iu cannot come after ${initial}; perhaps you mean xiu`;
     case 'h':
-        return "you becomes iu after consonant, but hiu is not a syllable in pinyin;\nperhaps you mean xiu";
+        return "you becomes iu after consonant, but hiu is not a syllable in pinyin; perhaps you mean xiu";
     default:
         return `you becomes iu after consonant, but ${initial}iu is not a syllable in pinyin`;
     }
@@ -1522,7 +1526,7 @@ parse['yuan'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `yuan becomes uan after ${initial};\n${initial}yuan should be written ${initial}uan`;
+        return `yuan becomes uan after ${initial}; ${initial}yuan should be written ${initial}uan`;
     default:
         return `yuan would become üan after consonant, but ${initial}üan is not a syllable in pinyin`;
     }
@@ -1535,10 +1539,10 @@ parse['yue'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `yue becomes ue after ${initial};\n${initial}yue should be written ${initial}ue`;
+        return `yue becomes ue after ${initial}; ${initial}yue should be written ${initial}ue`;
     case 'n':
     case 'l':
-        return `yue becomes üe after ${initial};\n${initial}yue should be written ${initial}üe`;
+        return `yue becomes üe after ${initial}; ${initial}yue should be written ${initial}üe`;
     default:
         return `yue would become üe after consonant, but ${initial}üe is not a syllable in pinyin`;
     }
@@ -1551,7 +1555,7 @@ parse['yun'] = (initial) => {
     case 'j':
     case 'q':
     case 'x':
-        return `yun becomes un after ${initial};\n${initial}yun should be written ${initial}un`;
+        return `yun becomes un after ${initial}; ${initial}yun should be written ${initial}un`;
     default:
         return `yun would become ün after consonant, but ${initial}ün is not a syllable in pinyin`;
     }
@@ -1560,7 +1564,7 @@ parse['yun'] = (initial) => {
 parse['yü'] = (initial) => {
     switch (initial) {
     case '':
-        return "ü loses its umlaut after y;\nyü should be written yu";
+        return "ü loses its umlaut after y; yü should be written yu";
     case 'j':
     case 'q':
     case 'x':
@@ -1576,11 +1580,11 @@ parse['yü'] = (initial) => {
 parse['yüan'] = (initial) => {
     switch (initial) {
     case '':
-        return "ü loses its umlaut after y;\nyüan should be written yuan";
+        return "ü loses its umlaut after y; yüan should be written yuan";
     case 'j':
     case 'q':
     case 'x':
-        return `yüan is written yuan, which becomes uan after ${initial};\n${initial}yüan should be written ${initial}uan`;
+        return `yüan is written yuan, which becomes uan after ${initial}; ${initial}yüan should be written ${initial}uan`;
     default:
         return `yüan is written yuan, which would become üan after consonant, but ${initial}üan is not a syllable in pinyin`;
     }
@@ -1589,7 +1593,7 @@ parse['yüan'] = (initial) => {
 parse['yüe'] = (initial) => {
     switch (initial) {
     case '':
-        return "ü loses its umlaut after y;\nyüe should be written yue";
+        return "ü loses its umlaut after y; yüe should be written yue";
     case 'j':
     case 'q':
     case 'x':
@@ -1605,11 +1609,11 @@ parse['yüe'] = (initial) => {
 parse['yün'] = (initial) => {
     switch (initial) {
     case '':
-        return "ü loses its umlaut after y;\nyün should be written yun";
+        return "ü loses its umlaut after y; yün should be written yun";
     case 'j':
     case 'q':
     case 'x':
-        return `yün is written yun, which becomes un after ${initial};\n${initial}yun should be written ${initial}un`;
+        return `yün is written yun, which becomes un after ${initial}; ${initial}yun should be written ${initial}un`;
     default:
         return `yün is written yun, which would become ün after consonant, but ${initial}ün is not a syllable in pinyin`;
     }

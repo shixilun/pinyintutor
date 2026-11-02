@@ -7,6 +7,17 @@ const audioCache = new Map();
 // itself to type that digraph. Tone digits are handled separately below.
 const ALLOWED_LETTERS = /^[a-uw-z:]$/;
 
+// Every hint shown to the learner goes through this: a line break after
+// each ',' and ';' and before each '(' (.entry-hint is white-space:
+// pre-line), so hint strings themselves never need a hand-placed '\n'.
+// Any whitespace already at those spots, '\n' included, is replaced.
+function wrapHint(text) {
+  return text
+    .replace(/([,;])\s*/g, '$1\n')
+    .replace(/(\S)\s*\(/g, '$1\n(')
+    .trim();
+}
+
 // A bare syllable input: live character filtering, tone-digit application,
 // u:/ü autocorrect, and validation — all internal. Callers never read
 // .value or touch the hint element directly; they call getValue()/prime().
@@ -45,7 +56,7 @@ function createSyllableEntry() {
       hint.textContent = '';
       return input.value;
     }
-    hint.textContent = result.hint;
+    hint.textContent = wrapHint(result.hint);
     return null;
   }
 

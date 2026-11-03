@@ -222,10 +222,126 @@ body {
    syllables are displayed to the learner, not just <py>. Falls back to
    the earlier placeholder styling if the font fails to load. */
 .py,
+.zy-converter-input.zy::placeholder,
 .entry-hint,
 .entry-input,
 .listen-btn {
   font-family: 'Adventor Pinyin', Arial, Helvetica, sans-serif;
+}
+
+/* 注音符号 (<zy>) — Traditional Chinese system fonts, no webfont. */
+.zy {
+  font-family:
+    /* Apple (macOS, iOS, iPadOS) */
+    'PingFang TC',
+    /* Windows */
+    'Microsoft JhengHei', 'Microsoft JhengHei UI',
+    /* Android & Linux */
+    'Noto Sans CJK TC', 'Noto Sans TC', 'Source Han Sans TC',
+    sans-serif;
+}
+
+/* <zytable>: one small 注音 | pinyin table per group, groups side by side. */
+.zy-chart {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.zy-group {
+  border-collapse: collapse;
+}
+
+/* Explicit line-height and height so every row is the same height: the
+   注音 and pinyin cells use different font stacks (different natural line
+   heights), and a blank ":" pair would otherwise collapse to its padding. */
+.zy-group td {
+  border: 1px solid #ccc;
+  padding: 4px 10px;
+  font-size: 20px;
+  line-height: 1.5;
+  height: 1.5em;
+  text-align: center;
+}
+
+/* 注音 cells acting as a keyboard for a <zyconverter> on the same page. */
+.zy-key {
+  cursor: pointer;
+  user-select: none;
+}
+
+.zy-key:hover {
+  background: #e6f0fb;
+}
+
+/* <zyconverter>: 注音 box, arrow buttons, pinyin box. A grid rather than
+   flex so the boxes center vertically on the arrows while their hints sit
+   in a row below. Each box is centered in an equal side column, which
+   keeps the two boxes the same distance from the arrows and leaves room
+   for a 300px hint (convert() shows only one hint at a time, so a hint may
+   spill a little past its column without hitting the other). */
+.zy-converter {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 4px;
+  margin: 16px 0;
+}
+
+.zy-converter-side {
+  display: contents;
+}
+
+.zy-converter-side:first-child > * {
+  grid-column: 1;
+}
+
+.zy-converter-side:last-child > * {
+  grid-column: 3;
+}
+
+.zy-converter-side > .zy-converter-input {
+  grid-row: 1;
+  justify-self: center;
+}
+
+.zy-converter-side > .entry-hint {
+  grid-row: 2;
+  justify-self: center;
+  align-self: start;
+  width: 300px;
+  max-width: none;
+  min-height: 5.2em;
+}
+
+.zy-converter-input {
+  width: 200px;
+  font-size: 20px;
+  padding: 8px 6px 6px;
+  line-height: 1.5;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
+
+.zy-converter-arrows {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.zy-converter-arrow {
+  font-size: 16px;
+  padding: 4px 12px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
 }
 
 .eg {

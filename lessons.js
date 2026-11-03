@@ -154,6 +154,147 @@ function hydratePy(el) {
   el.replaceWith(span);
 }
 
+// <zy>ㄇㄚ</zy> — <py>'s counterpart for 注音符号: purely typographic, renders
+// its text in a Traditional Chinese system font stack. lang="zh-TW" keeps
+// the browser from picking Simplified/Japanese glyph variants or fallback
+// fonts if none of the named fonts is installed.
+function hydrateZy(el) {
+  const span = document.createElement('span');
+  span.className = 'zy';
+  span.lang = 'zh-TW';
+  span.textContent = el.textContent;
+  el.replaceWith(span);
+}
+
+// The <zyconverter> 注音 box a click on a <zytable> symbol types into: set
+// when that box gains focus, cleared when its pinyin neighbor does, so a
+// click only ever inserts where the learner last put the cursor for 注音.
+let zyInsertTarget = null;
+
+function insertZhuyin(text) {
+  const input = zyInsertTarget;
+  if (!input || !input.isConnected) return;
+  input.setRangeText(text, input.selectionStart, input.selectionEnd, 'end');
+  input.focus();
+}
+
+// <zyconverter></zyconverter> — a 注音 box and a pinyin box with an arrow
+// button each way between them, converting a single syllable. Tones are
+// ignored: stripped from the input if present, never produced in the
+// output. A failed conversion clears the other box and leaves a hint
+// under the box that was converted from.
+function hydrateZyConverter(el) {
+  const element = document.createElement('div');
+  element.className = 'zy-converter';
+
+  function createSide(extraClass, placeholder) {
+    const side = document.createElement('div');
+    side.className = 'zy-converter-side';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = `zy-converter-input ${extraClass}`;
+    input.placeholder = placeholder;
+    input.autocomplete = 'off';
+    input.spellcheck = false;
+    const hint = document.createElement('div');
+    hint.className = 'entry-hint';
+    side.append(input, hint);
+    return { side, input, hint };
+  }
+
+  const zy = createSide('zy', 'bopomofo');
+  zy.input.lang = 'zh-TW';
+  const py = createSide('py', 'pinyin');
+
+  function convert(from, to, converter) {
+    const result = converter(from.input.value);
+    to.hint.textContent = '';
+    if (result.error) {
+      from.hint.textContent = wrapHint(result.error);
+      to.input.value = '';
+      return;
+    }
+    from.hint.textContent = '';
+    to.input.value = result.output;
+  }
+  const zyToPy = () => convert(zy, py, zhuyinToPinyin);
+  const pyToZy = () => convert(py, zy, pinyinToZhuyin);
+
+  function createArrow(label, title, onClick) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'zy-converter-arrow';
+    button.textContent = label;
+    button.title = title;
+    button.addEventListener('click', onClick);
+    return button;
+  }
+  const arrows = document.createElement('div');
+  arrows.className = 'zy-converter-arrows';
+  arrows.append(
+    createArrow('→', 'bopomofo to pinyin', zyToPy),
+    createArrow('←', 'pinyin to bopomofo', pyToZy),
+  );
+
+  zy.input.addEventListener('focus', () => { zyInsertTarget = zy.input; });
+  py.input.addEventListener('focus', () => { zyInsertTarget = null; });
+  py.input.addEventListener('input', () => autoCorrect(py.input));
+  zy.input.addEventListener('keydown', (e) => { if (e.key === 'Enter') zyToPy(); });
+  py.input.addEventListener('keydown', (e) => { if (e.key === 'Enter') pyToZy(); });
+
+  element.append(zy.side, arrows, py.side);
+  el.replaceWith(element);
+}
+
+// <zytable groups="ㄅ:b ㄆ:p ㄇ:m ㄈ:f | ㄉ:d ㄊ:t ㄋ:n ㄌ:l"></zytable> — a
+// 注音-to-pinyin chart: each "|"-separated group becomes its own small
+// two-column table (注音 | pinyin), and the groups sit side by side,
+// wrapping onto further lines as the page narrows. Each pair is
+// zhuyin:pinyin with no spaces inside it; a lone ":" makes a blank row.
+//
+// On a page that also has a <zyconverter>, the 注音 cells double as a
+// keyboard: clicking one types its symbol into the converter's 注音 box
+// at the cursor. The mousedown is swallowed so the click doesn't take
+// focus (and with it the cursor) away from that box.
+function hydrateZyTable(el, isKeyboard) {
+  const groupsAttr = el.getAttribute('groups');
+  if (!groupsAttr) {
+    renderTagError(el, 'zytable needs a groups attribute');
+    return;
+  }
+  const groups = groupsAttr.split('|').map((g) => g.trim().split(/\s+/).filter(Boolean));
+  const bad = groups.flat().find((pair) => pair.split(':').length !== 2);
+  if (bad) {
+    renderTagError(el, `zytable pair "${bad}" isn't zhuyin:pinyin`);
+    return;
+  }
+
+  const chart = document.createElement('div');
+  chart.className = 'zy-chart';
+  for (const group of groups) {
+    const table = document.createElement('table');
+    table.className = 'zy-group';
+    for (const pair of group) {
+      const [zy, py] = pair.split(':');
+      const row = table.insertRow();
+      const zyCell = row.insertCell();
+      zyCell.className = 'zy';
+      zyCell.lang = 'zh-TW';
+      zyCell.textContent = zy;
+      if (isKeyboard && zy) {
+        zyCell.classList.add('zy-key');
+        zyCell.addEventListener('mousedown', (e) => e.preventDefault());
+        zyCell.addEventListener('click', () => insertZhuyin(zy));
+      }
+      const pyCell = row.insertCell();
+      pyCell.className = 'py';
+      pyCell.textContent = py;
+    }
+    chart.append(table);
+  }
+  el.replaceWith(chart);
+}
+
 // <syllableentry></syllableentry> — an embedded interactive syllable-entry
 // box, no priming, no play button: just the input + validation hint, same
 // component createBox()/createSyllablePlayer() are themselves built from.
@@ -338,6 +479,10 @@ function hydrateEgSentence(el) {
 
 function hydratePage(root, namedSets) {
   root.querySelectorAll('py').forEach(hydratePy);
+  root.querySelectorAll('zy').forEach(hydrateZy);
+  const hasZyConverter = root.querySelector('zyconverter') !== null;
+  root.querySelectorAll('zyconverter').forEach(hydrateZyConverter);
+  root.querySelectorAll('zytable').forEach((el) => hydrateZyTable(el, hasZyConverter));
   root.querySelectorAll('eg').forEach(hydrateEg);
   root.querySelectorAll('egpy').forEach(hydrateEgPy);
   root.querySelectorAll('egsentence').forEach(hydrateEgSentence);

@@ -756,15 +756,27 @@ function setActivePage(pageItem) {
   if (activePageItem) activePageItem.classList.add('active');
 }
 
+// Each section's last scroll position in the lessons panel, keyed by its
+// nav entry, so going back to a section returns to where the learner left
+// it, and a section never visited before starts at the top. Saved before
+// the panel's content is replaced, since a shorter new page would clamp it.
+const scrollPositions = new WeakMap();
+
+function saveScrollPosition(content) {
+  if (activePageItem) scrollPositions.set(activePageItem, content.parentElement.scrollTop);
+}
+
 function renderPageList(pageList, content, topic) {
   topic.pages.forEach((page) => {
     const pageItem = document.createElement('div');
     pageItem.className = 'lessons-page';
     pageItem.textContent = page.title;
     pageItem.addEventListener('click', () => {
+      saveScrollPosition(content);
       content.innerHTML = page.html;
       hydratePage(content, topic.namedSets);
       setActivePage(pageItem);
+      content.parentElement.scrollTop = scrollPositions.get(pageItem) ?? 0;
     });
     pageList.appendChild(pageItem);
   });
@@ -809,6 +821,7 @@ function renderTopicList(nav, content, entries) {
       pageList.hidden = !pageList.hidden;
       if (!pageList.hidden && pageList.children.length > 0) revealTopic(topicItem, pageList);
       if (pageList.hidden && activePageItem && pageList.contains(activePageItem)) {
+        saveScrollPosition(content);
         content.innerHTML = '';
         setActivePage(null);
       }

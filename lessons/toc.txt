@@ -20,3 +20,4 @@ zhch           zh, ch
 spell          Spelling Rules
 jqx            j, q, x
 special        Special Syllables
+bopomofo       Appendix: bopomofo

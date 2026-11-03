@@ -44,7 +44,7 @@ sound system of the language restricts what sounds can go together.
 Many people find it easiest to learn the sound system of Chinese by
 looking at the syllabic structure.
 
-Traditionally, a Chinese syllable is divided into three parts.  The
+Traditionally, a Chinese syllable consists of three parts.  The
 first part is called the _initial_; it is the beginning consonant
 of the syllable.  If the syllable doesn't have a beginning consonant,
 we say the initial is _empty_.

@@ -323,6 +323,8 @@ body {
 }
 
 .lessons-page {
+  /* revealTopic() stops scrolling here, not flush with the panel's edge */
+  scroll-margin-bottom: 16px;
   padding: 4px 6px;
   font-size: 14px;
   cursor: pointer;

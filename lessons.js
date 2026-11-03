@@ -488,6 +488,22 @@ function renderPageList(pageList, content, topic) {
   });
 }
 
+// Scrolls a just-expanded topic's section list into view, so a topic near
+// the bottom of the toc doesn't open below the fold. If the topic and all
+// its sections fit, the scroll stops as soon as the last section is
+// visible; if not, the topic title goes to the top instead.
+function revealTopic(topicItem, pageList) {
+  if (pageList.hidden) return;
+  const panel = topicItem.closest('#toc-panel');
+  const height = pageList.getBoundingClientRect().bottom
+    - topicItem.getBoundingClientRect().top;
+  if (height <= panel.clientHeight && pageList.lastElementChild) {
+    pageList.lastElementChild.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  } else {
+    topicItem.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }
+}
+
 function renderTopicList(nav, content, entries) {
   entries.forEach(({ file, title }) => {
     const topicItem = document.createElement('div');
@@ -505,9 +521,11 @@ function renderTopicList(nav, content, entries) {
           .catch((err) => {
             pageList.textContent = `Preamble failed: ${err.message}`;
             pageList.classList.add('tag-error');
-          });
+          })
+          .then(() => revealTopic(topicItem, pageList));
       }
       pageList.hidden = !pageList.hidden;
+      if (!pageList.hidden && pageList.children.length > 0) revealTopic(topicItem, pageList);
       if (pageList.hidden && activePageItem && pageList.contains(activePageItem)) {
         content.innerHTML = '';
         setActivePage(null);

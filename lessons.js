@@ -295,6 +295,140 @@ function hydrateZyTable(el, isKeyboard) {
   el.replaceWith(chart);
 }
 
+// <pydecomposition> or <zydecomposition> around a five-column markdown
+// table (blank lines inside the tag so marked still renders the table):
+//
+//   <pydecomposition>
+//
+//   | syllable | initial | final | medial | rime |
+//   |----------|---------|-------|--------|------|
+//   | gua      | g       | wa    | wu     | a    |
+//
+//   </pydecomposition>
+//
+// Rebuilt into a two-level layout: "final" heads a column pair over
+// medial and rime, and each syllable takes two rows — the final across
+// both columns on top, its medial and rime split beneath, with syllable
+// and initial spanning both. Header labels come from the markdown header
+// row; empty markdown cells stay empty. Body cells are styled like <py>
+// or <zy> to match the tag; the header row keeps the lesson font.
+function hydrateDecomposition(el, kind) {
+  const source = el.querySelector('table');
+  const cols = source && source.rows[0] ? source.rows[0].cells.length : 0;
+  if (cols !== 5) {
+    renderTagError(el, `${kind}decomposition needs a markdown table with 5 columns: `
+      + 'syllable | initial | final | medial | rime');
+    return;
+  }
+  const texts = [...source.rows].map((row) => [...row.cells].map((cell) => cell.textContent.trim()));
+  const [heads, ...body] = texts;
+  el.replaceWith(createDecompositionTable(heads, body, kind).table);
+}
+
+// The <pydecomposition>/<zydecomposition>/<pysplitter> layout, from header
+// labels and body rows, each [syllable, initial, final, medial, rime].
+// Returns the table plus each body row's five cells, in that same order,
+// for a caller that fills them in later.
+function createDecompositionTable(heads, body, kind) {
+  const [syllableHead, initialHead, finalHead, medialHead, rimeHead] = heads;
+  const table = document.createElement('table');
+  table.className = 'decomposition';
+  const scriptAttrs = kind === 'zy' ? { className: 'zy', lang: 'zh-TW' } : { className: 'py' };
+  const addCell = (row, tag, text, attrs = {}) => {
+    const cell = document.createElement(tag);
+    cell.textContent = text;
+    Object.assign(cell, attrs);
+    row.append(cell);
+    return cell;
+  };
+
+  const thead = table.createTHead();
+  const head1 = thead.insertRow();
+  addCell(head1, 'th', syllableHead);
+  addCell(head1, 'th', initialHead);
+  addCell(head1, 'th', finalHead, { colSpan: 2 });
+  const head2 = thead.insertRow();
+  addCell(head2, 'th', '');
+  addCell(head2, 'th', '');
+  addCell(head2, 'th', medialHead);
+  addCell(head2, 'th', rimeHead);
+
+  const tbody = table.createTBody();
+  const cells = body.map(([syllable, initial, final, medial, rime]) => {
+    const top = tbody.insertRow();
+    const bottom = tbody.insertRow();
+    return [
+      addCell(top, 'td', syllable, { ...scriptAttrs, rowSpan: 2 }),
+      addCell(top, 'td', initial, { ...scriptAttrs, rowSpan: 2 }),
+      addCell(top, 'td', final, { ...scriptAttrs, colSpan: 2 }),
+      addCell(bottom, 'td', medial, scriptAttrs),
+      addCell(bottom, 'td', rime, scriptAttrs),
+    ];
+  });
+  return { table, cells };
+}
+
+// <pysplitter></pysplitter> — the <pydecomposition> layout for a single
+// syllable the learner types: a pinyin box, its hint, and a "split"
+// button stacked in the syllable cell (as in <dictation>). Split (or
+// Enter) checks the syllable with parse() and fills in initial, final,
+// medial, and rime from splitrawsyl(). Tone marks aren't accepted. A
+// failed split clears the other cells and leaves a hint. Split is
+// disabled while the box is empty, and any edit to the box clears the
+// other cells at once, so they never show the split of something other
+// than what's in the box. Edits leave the hint alone, so the learner can
+// still read it while fixing the syllable.
+function hydratePySplitter(el) {
+  const heads = ['syllable', 'initial', 'final', 'medial', 'rime'];
+  const { table, cells } = createDecompositionTable(heads, [['', '', '', '', '']], 'py');
+  table.classList.add('py-splitter');
+  const [syllableCell, ...partCells] = cells[0];
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'entry-input py';
+  input.placeholder = 'pinyin';
+  input.autocomplete = 'off';
+  input.spellcheck = false;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.textContent = 'split';
+  button.disabled = true;
+  const hint = document.createElement('div');
+  hint.className = 'entry-hint';
+  const entry = document.createElement('div');
+  entry.className = 'py-splitter-entry';
+  entry.append(input, hint, button);
+  syllableCell.append(entry);
+
+  const clearParts = () => partCells.forEach((cell) => { cell.textContent = ''; });
+
+  function split() {
+    if (button.disabled) return;
+    const rawsyl = input.value.toLowerCase().trim();
+    clearParts();
+    hint.textContent = '';
+    if (/\s/.test(rawsyl)) {
+      hint.textContent = 'enter just one syllable';
+    } else if (splittone(rawsyl)[1] !== 0) {
+      hint.textContent = 'leave off the tone mark';
+    } else if (parse(rawsyl)) {
+      hint.textContent = wrapHint(parse(rawsyl));
+    } else {
+      splitrawsyl(rawsyl).forEach((part, i) => { partCells[i].textContent = part; });
+    }
+  }
+
+  button.addEventListener('click', split);
+  input.addEventListener('keydown', (e) => { if (e.key === 'Enter') split(); });
+  input.addEventListener('input', () => {
+    autoCorrect(input);
+    clearParts();
+    button.disabled = input.value.trim() === '';
+  });
+  el.replaceWith(table);
+}
+
 // <syllableentry></syllableentry> — an embedded interactive syllable-entry
 // box, no priming, no play button: just the input + validation hint, same
 // component createBox()/createSyllablePlayer() are themselves built from.
@@ -483,6 +617,9 @@ function hydratePage(root, namedSets) {
   const hasZyConverter = root.querySelector('zyconverter') !== null;
   root.querySelectorAll('zyconverter').forEach(hydrateZyConverter);
   root.querySelectorAll('zytable').forEach((el) => hydrateZyTable(el, hasZyConverter));
+  root.querySelectorAll('pydecomposition').forEach((el) => hydrateDecomposition(el, 'py'));
+  root.querySelectorAll('zydecomposition').forEach((el) => hydrateDecomposition(el, 'zy'));
+  root.querySelectorAll('pysplitter').forEach(hydratePySplitter);
   root.querySelectorAll('eg').forEach(hydrateEg);
   root.querySelectorAll('egpy').forEach(hydrateEgPy);
   root.querySelectorAll('egsentence').forEach(hydrateEgSentence);

@@ -492,3 +492,52 @@ body {
   text-decoration-skip-ink: none;
   text-underline-offset: calc(-0.273em - 1px);
 }
+
+/* Plain markdown (GFM pipe) tables in a lesson; <zytable> styles its own. */
+.lessons-content table:not(.zy-group) {
+  border-collapse: collapse;
+  margin: 16px auto;
+}
+
+.lessons-content table:not(.zy-group) th,
+.lessons-content table:not(.zy-group) td {
+  border: 1px solid #ccc;
+  padding: 4px 12px;
+}
+
+.lessons-content table:not(.zy-group) th {
+  background: #f4f4f4;
+  font-weight: normal;
+}
+
+/* <pydecomposition> / <zydecomposition>: everything centered; syllable
+   and initial span two rows and sit at the top of them. The body cells'
+   font comes from .py / .zy. */
+.decomposition th,
+.decomposition td {
+  text-align: center;
+  vertical-align: top;
+  min-width: 4em;
+}
+
+/* <pysplitter>: pinyin box, then the hint (if any), then the split
+   button, stacked in the syllable cell. The box only needs room for
+   a 6-letter syllable. The hint is the same fixed 300px x 4 lines as
+   <dictation>'s, so the table doesn't resize when one appears. */
+.py-splitter-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.py-splitter .entry-input {
+  width: 6em;
+}
+
+.py-splitter .entry-hint {
+  width: 300px;
+  max-width: none;
+  min-height: 5.2em;
+  margin-top: 4px;
+}

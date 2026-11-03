@@ -1632,3 +1632,57 @@ parse['wey'] = () => {
 parse['yow'] = () => {
     return parse['ow']();
 };
+
+const abbr = {
+    iu: 'iou',
+    ui: 'uei',
+    un: 'uen',
+};
+
+function splitrawsyl(rawsyl) {
+    switch (true) {
+        case /^[aeo]/.test(rawsyl):
+            if (rawsyl === 'ong') return ['', rawsyl, 'u', 'eng'];
+            return ['', rawsyl, '', rawsyl];
+        case /^w/.test(rawsyl):
+            if (rawsyl[1] === 'u') return ['', rawsyl, 'u', ''];
+            return ['', rawsyl, 'u', rawsyl.slice(1)];
+        case /^y/.test(rawsyl):
+            let rawsylhat = rawsyl.slice(-1) === 'e'
+                ? rawsyl.slice(0, -1) + 'ê'
+                : rawsyl;
+            switch (true) {
+                case (rawsyl[1] === 'u'):
+                    return rawsyl[2] === 'n'
+                        ? ['', rawsyl, 'ü', 'en']
+                        : ['', rawsyl, 'ü', rawsylhat.slice(2)];
+                case (rawsyl[1] === 'i'):
+                    return rawsyl.length === 2
+                        ? ['', rawsyl, 'i', '']
+                        : ['', rawsyl, 'i', 'e' + rawsyl.slice(2)];
+                case (rawsyl.slice(1) === 'ong'):
+                    return ['', rawsyl, 'ü', 'eng'];
+            }
+            return ['', rawsyl, 'i', rawsylhat.slice(1)];
+        default:
+            let {initial, final} = /(?<initial>[^aeiouü]*)(?<final>.*)/.exec(rawsyl).groups;
+            // next line uses short circuit
+            if (!['j', 'q', 'x'].includes(initial) || final !== 'un') final = abbr[final] || final;
+            if (['b', 'p', 'm', 'f'].includes(initial) && final === 'o') final = 'uo';
+            switch (true) {
+                case ['zhi', 'chi', 'shi', 'ri', 'zi', 'ci', 'si'].includes(rawsyl):
+                    return [initial, '(-i)', '', '(-i)'];
+                case /^u/.test(final):
+                    if (/^[jqx]/.test(initial)) return [initial, ...splitrawsyl('yu' + final.slice(1)).slice(1)];
+                    if (!final[1]) return [initial, ...splitrawsyl('wu').slice(1)];
+                    return [initial, ...splitrawsyl('w' + final.slice(1)).slice(1)];
+                case /^i/.test(final):
+                    if (!final[1] || final[1] === 'n') return [initial, ...splitrawsyl('y' + final).slice(1)];
+                    return [initial, ...splitrawsyl('y' + final.slice(1)).slice(1)];
+                case /^ü/.test(final):
+                    return [initial, ...splitrawsyl('yu' + final.slice(1)).slice(1)];
+                default:
+                    return [initial, ...splitrawsyl(final).slice(1)];
+            }
+    }
+}

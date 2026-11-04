@@ -13,9 +13,11 @@ function createListenButton(syllable, { showIcon = false } = {}) {
     if (next) {
       button.textContent = '🔊';
       button.setAttribute('aria-label', `play ${syllable}`);
+      button.title = 'click to hear';
     } else {
       button.textContent = syllable;
       button.removeAttribute('aria-label');
+      button.removeAttribute('title');
     }
   }
 

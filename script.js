@@ -140,6 +140,12 @@ function createBox() {
   closeButton.addEventListener('mousedown', (e) => e.stopPropagation());
   closeButton.addEventListener('click', () => box.remove());
 
+  // Whichever box has the focus (its entry or play button) comes to the
+  // front, so its hint is never hidden under a box created after it.
+  box.addEventListener('focusin', () => {
+    if (Number(box.style.zIndex) !== topZIndex) box.style.zIndex = ++topZIndex;
+  });
+
   box.style.zIndex = ++topZIndex;
 
   const buttonRect = newBoxButton.getBoundingClientRect();

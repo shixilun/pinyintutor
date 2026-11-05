@@ -97,19 +97,33 @@ body {
   gap: 6px;
 }
 
-/* Hear a Syllable boxes: the hint is the same fixed 300px as <dictation>'s
-   and <pysplitter>'s (the widest parse() hint line is ~290px), so the box
+/* Hear a Syllable boxes: the hint has a fixed 240px width, so the box
    doesn't widen when a hint appears; the entry row is centered above it.
-   <dictation>'s answer player has the same 300px hint, so its row is
-   centered too (under the speaker button). */
+   240px is narrower than <dictation>'s and <pysplitter>'s 300px but still
+   keeps every parse() hint to 4 lines (the box may grow taller instead).
+   <dictation>'s answer player has a 300px hint, so its row is centered
+   too (under the speaker button). */
 .box .syllable-player,
 .dictation-quiz .syllable-player {
   align-items: center;
 }
 
 .box .entry-hint {
-  width: 300px;
+  width: 240px;
   max-width: none;
+  min-height: 0;
+}
+
+/* No room is held for a hint: the box grows when one appears. Removing
+   the empty hint also drops the gap above it, so the box ends right
+   below the entry row. The player keeps the hint's width so the box
+   doesn't widen (and its entry row shift) when a hint appears. */
+.box .entry-hint:empty {
+  display: none;
+}
+
+.box .syllable-player {
+  width: 240px;
 }
 
 /* Extra top padding and a taller line-height than the default single-line

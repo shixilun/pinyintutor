@@ -48,7 +48,10 @@ function createSyllableEntry() {
     }
   });
 
-  input.addEventListener('input', () => autoCorrect(input));
+  input.addEventListener('input', () => {
+    autoCorrect(input);
+    if (input.value.trim() === '') hint.textContent = '';
+  });
 
   function getValue() {
     const result = validateSyllable(input.value);

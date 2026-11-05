@@ -200,6 +200,9 @@ function hydrateZyConverter(el) {
     input.spellcheck = false;
     const hint = document.createElement('div');
     hint.className = 'entry-hint';
+    input.addEventListener('input', () => {
+      if (input.value.trim() === '') hint.textContent = '';
+    });
     side.append(input, hint);
     return { side, input, hint };
   }
@@ -379,7 +382,7 @@ function createDecompositionTable(heads, body, kind) {
 // disabled while the box is empty, and any edit to the box clears the
 // other cells at once, so they never show the split of something other
 // than what's in the box. Edits leave the hint alone, so the learner can
-// still read it while fixing the syllable.
+// still read it while fixing the syllable, until the box is emptied.
 function hydratePySplitter(el) {
   const heads = ['syllable', 'initial', 'final', 'medial', 'rime'];
   const { table, cells } = createDecompositionTable(heads, [['', '', '', '', '']], 'py');
@@ -427,6 +430,7 @@ function hydratePySplitter(el) {
     autoCorrect(input);
     clearParts();
     button.disabled = input.value.trim() === '';
+    if (button.disabled) hint.textContent = '';
   });
   el.replaceWith(table);
 }

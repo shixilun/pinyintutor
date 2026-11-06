@@ -191,6 +191,88 @@ function startDrag(e, box) {
   document.addEventListener('mouseup', onUp);
 }
 
+// Lets the learner reorder `list`'s children: drag an item by its
+// .reorder-handle (mouse or touch, via pointer events) and the items it
+// passes slide out of the way; or focus the handle and press ↑/↓. Items
+// can be added or removed at any time. Written for <initialfinal>'s tone
+// rows, and meant to be reused for a phone-friendly Hear a Syllable grid.
+function makeReorderable(list) {
+  const itemOf = (handle) => {
+    let item = handle;
+    while (item && item.parentElement !== list) item = item.parentElement;
+    return item;
+  };
+
+  // Moves `item` before or after `sibling`, slides `sibling` from its old
+  // spot to its new one, and returns how far `item` moved in the layout.
+  function moveItem(item, sibling, where) {
+    const itemTop = item.offsetTop;
+    const siblingTop = sibling.offsetTop;
+    if (where === 'before') sibling.before(item);
+    else sibling.after(item);
+    sibling.style.transition = 'none';
+    sibling.style.transform = `translateY(${siblingTop - sibling.offsetTop}px)`;
+    sibling.getBoundingClientRect();
+    sibling.style.transition = 'transform 150ms';
+    sibling.style.transform = '';
+    return item.offsetTop - itemTop;
+  }
+
+  list.addEventListener('pointerdown', (e) => {
+    const handle = e.target.closest('.reorder-handle');
+    if (!handle || e.button !== 0) return;
+    const item = itemOf(handle);
+    if (!item) return;
+    e.preventDefault();
+    item.classList.add('reordering');
+    item.style.transition = 'none';
+    // Where the pointer would be if the item were sitting at its current
+    // place in the layout; the item is drawn offset from there.
+    let originY = e.clientY;
+
+    // Listened for on the window, not the handle: moving the item in the
+    // page would cancel any pointer capture on its handle mid-drag.
+    function onMove(ev) {
+      if (ev.pointerId !== e.pointerId) return;
+      let prev = item.previousElementSibling;
+      while (prev && ev.clientY - originY < -prev.offsetHeight / 2) {
+        originY += moveItem(item, prev, 'before');
+        prev = item.previousElementSibling;
+      }
+      let next = item.nextElementSibling;
+      while (next && ev.clientY - originY > next.offsetHeight / 2) {
+        originY += moveItem(item, next, 'after');
+        next = item.nextElementSibling;
+      }
+      item.style.transform = `translateY(${ev.clientY - originY}px)`;
+    }
+    function onUp(ev) {
+      if (ev.pointerId !== e.pointerId) return;
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+      item.classList.remove('reordering');
+      item.style.transition = 'transform 150ms';
+      item.style.transform = '';
+    }
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+  });
+
+  list.addEventListener('keydown', (e) => {
+    const handle = e.target.closest('.reorder-handle');
+    if (!handle || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
+    e.preventDefault();
+    const item = itemOf(handle);
+    const sibling = e.key === 'ArrowUp' ? item.previousElementSibling : item.nextElementSibling;
+    if (!sibling) return;
+    moveItem(item, sibling, e.key === 'ArrowUp' ? 'before' : 'after');
+    // Moving the item in the page takes the focus away from its handle.
+    handle.focus();
+  });
+}
+
 function applyTone(input, toneDigit) {
   const cursor = input.selectionStart;
   const base = untone(input.value);

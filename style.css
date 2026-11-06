@@ -204,6 +204,136 @@ body {
   margin: 16px 0;
 }
 
+/* <initialfinal>: the two dropdowns, then the learner's tone rows. */
+.initial-final {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.initial-final-choice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+}
+
+/* base-select lets the open list use the pinyin font too; a browser
+   without it falls back to its own native dropdown. */
+.initial-final select {
+  appearance: base-select;
+  min-width: 5em;
+  font-size: 18px;
+  padding: 4px 8px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+/* Its own rule: a browser that doesn't know ::picker() would otherwise
+   throw out the whole rule, select styling included. */
+.initial-final ::picker(select) {
+  appearance: base-select;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.initial-final select:has(option[value='']:checked) {
+  color: #888;
+}
+
+.initial-final-create {
+  margin-left: 4px;
+  font-size: 14px;
+  padding: 6px 12px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #f0f0f0;
+  cursor: pointer;
+}
+
+.initial-final-create:hover:not(:disabled) {
+  background: #e4e4e4;
+}
+
+.initial-final-create:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.initial-final-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.initial-final-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 6px;
+}
+
+.initial-final-row .listen-grid {
+  flex-wrap: nowrap;
+  margin: 0;
+}
+
+/* The row being dragged sits above the others it passes. */
+.initial-final-row.reordering {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* Shown when the learner picks a syllable that already has a row. */
+.initial-final-row.flash {
+  animation: row-flash 1s ease-out;
+}
+
+@keyframes row-flash {
+  from { background: #ffe58a; }
+  to { background: transparent; }
+}
+
+/* touch-action: none keeps a touch drag on the handle from scrolling. */
+.reorder-handle {
+  touch-action: none;
+  cursor: grab;
+  padding: 4px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #888;
+  font-size: 20px;
+}
+
+.reorder-handle:active {
+  cursor: grabbing;
+}
+
+.row-delete {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #888;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.row-delete:hover {
+  background: #c66;
+  color: #fff;
+}
+
 .dictation-quiz {
   display: flex;
   flex-direction: column;
@@ -239,7 +369,9 @@ body {
 .zy-converter-input.zy::placeholder,
 .entry-hint,
 .entry-input,
-.listen-btn {
+.listen-btn,
+.initial-final select,
+.initial-final option {
   font-family: 'Adventor Pinyin', Arial, Helvetica, sans-serif;
 }
 

@@ -1686,3 +1686,41 @@ function splitrawsyl(rawsyl) {
             }
     }
 }
+
+// this method assumes initial and final are well-formed
+function initialfinal(initial, final) {
+    if (!initial) return final;
+    if (!'yw'.includes(final[0])) return initial + final;
+    switch (final) {
+        // silent y/w
+        case 'yi':
+        case 'yin':
+        case 'ying':
+        case 'wu':
+            return initial + final.slice(1);
+        // three abbreviations
+        case 'you':
+            return initial + 'iu';
+        case 'wei':
+            return initial + 'ui';
+        case 'wen':
+            return initial + 'un';
+        // umlaut
+        case 'yu':
+        case 'yue':
+            if ('ln'.includes(initial)) return initial + 'ü' + final.slice(2);
+            return initial + final.slice(1);
+        // bpmf
+        case 'wo':
+            if ('bpmf'.includes(initial)) return initial + 'o';
+            return initial + 'uo';
+    }
+    switch (final[0]) {
+        case 'y':
+            return final[1] === 'u'
+                ? initial + final.slice(1)
+                : initial + 'i' + final.slice(1);
+        case 'w':
+            return initial + 'u' + final.slice(1);
+    }
+}

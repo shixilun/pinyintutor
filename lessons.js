@@ -474,6 +474,127 @@ function hydrateToneRows(el) {
   el.replaceWith(rows.element);
 }
 
+// <initialfinal i="z c s" f="a e ai"></initialfinal> — a dropdown of
+// initials and a dropdown of finals (finals written as they are with no
+// initial: yan, wan, ying), and a "create" button, enabled once both are
+// chosen, that adds that syllable's 4 tones as a row at the bottom, or
+// flashes the row if it's already there. A separate button (rather than
+// adding a row whenever a dropdown changes) lets a deleted row be made
+// again without changing the dropdowns first. Rows can be dragged into
+// any order and deleted, so a learner can line up, say, za and ca to
+// compare them.
+//
+// Every initial + final pair is checked when the page loads, and any bad
+// one turns the whole tag into a red error. parse() alone isn't enough:
+// a slip like d + yu combines into a real syllable (du, really d + wu),
+// so the result must also split back into the same initial and final.
+function hydrateInitialFinal(el) {
+  const initials = (el.getAttribute('i') || '').trim().split(/\s+/).filter(Boolean);
+  const finals = (el.getAttribute('f') || '').trim().split(/\s+/).filter(Boolean);
+  if (initials.length === 0 || finals.length === 0) {
+    renderTagError(el, 'initialfinal needs an i and an f attribute');
+    return;
+  }
+  const bad = initials.flatMap((i) => finals
+    .filter((f) => {
+      const syl = initialfinal(i, f);
+      if (!syl || parse(syl) !== '') return true;
+      const [splitInitial, splitFinal] = splitrawsyl(syl);
+      return splitInitial !== i || splitFinal !== f;
+    })
+    .map((f) => `${i} + ${f}`));
+  if (bad.length > 0) {
+    renderTagError(el, `initialfinal has pairs that aren't pinyin syllables: ${bad.join(', ')}`);
+    return;
+  }
+
+  // The hidden, disabled first option is the placeholder: it shows in the
+  // closed dropdown until a choice is made, but never in the open list.
+  function createSelect(label, values) {
+    const select = document.createElement('select');
+    select.setAttribute('aria-label', label);
+    const placeholder = new Option(label, '');
+    placeholder.disabled = true;
+    placeholder.hidden = true;
+    placeholder.selected = true;
+    select.add(placeholder);
+    values.forEach((value) => select.add(new Option(value)));
+    return select;
+  }
+  const initialSelect = createSelect('initial', initials);
+  const finalSelect = createSelect('final', finals);
+
+  const plus = document.createElement('span');
+  plus.textContent = '+';
+  const create = document.createElement('button');
+  create.type = 'button';
+  create.className = 'initial-final-create';
+  create.textContent = 'create';
+  create.disabled = true;
+  const choice = document.createElement('div');
+  choice.className = 'initial-final-choice';
+  choice.append(initialSelect, plus, finalSelect, create);
+
+  const rows = document.createElement('div');
+  rows.className = 'initial-final-rows';
+  makeReorderable(rows);
+
+  function flash(row) {
+    row.classList.remove('flash');
+    row.getBoundingClientRect(); // so re-adding the class restarts the animation
+    row.classList.add('flash');
+  }
+
+  function createRow(syl) {
+    const handle = document.createElement('button');
+    handle.type = 'button';
+    handle.className = 'reorder-handle';
+    handle.textContent = '⠿';
+    handle.setAttribute('aria-label', `move ${syl}`);
+    handle.title = 'drag to move';
+
+    const grid = createListenGrid([1, 2, 3, 4].map((tone) => addtone(syl, tone)));
+
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.className = 'row-delete';
+    remove.textContent = '×';
+    remove.setAttribute('aria-label', `delete ${syl}`);
+    remove.title = 'delete';
+
+    const row = document.createElement('div');
+    row.className = 'initial-final-row';
+    row.dataset.syllable = syl;
+    row.append(handle, grid.element, remove);
+    remove.addEventListener('click', () => row.remove());
+    return row;
+  }
+
+  function choose() {
+    if (!initialSelect.value || !finalSelect.value) return;
+    const syl = initialfinal(initialSelect.value, finalSelect.value);
+    let row = [...rows.children].find((r) => r.dataset.syllable === syl);
+    if (row) {
+      flash(row);
+    } else {
+      row = createRow(syl);
+      rows.append(row);
+    }
+    row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+  const updateCreate = () => {
+    create.disabled = !initialSelect.value || !finalSelect.value;
+  };
+  initialSelect.addEventListener('change', updateCreate);
+  finalSelect.addEventListener('change', updateCreate);
+  create.addEventListener('click', choose);
+
+  const element = document.createElement('div');
+  element.className = 'initial-final';
+  element.append(choice, rows);
+  el.replaceWith(element);
+}
+
 // <dictation syl="pā tā" rawsyl="yi wu yu"></dictation> — a dictation quiz
 // over the combined pool: syl's syllables used as given, each of rawsyl's
 // expanded to all 4 tones. Either attribute alone is fine; at least one
@@ -633,6 +754,7 @@ function hydratePage(root, namedSets) {
   root.querySelectorAll('syllableplayer').forEach(hydrateSyllablePlayer);
   root.querySelectorAll('listen').forEach(hydrateListen);
   root.querySelectorAll('tonerows').forEach(hydrateToneRows);
+  root.querySelectorAll('initialfinal').forEach(hydrateInitialFinal);
   root.querySelectorAll('dictation').forEach((el) => hydrateDictation(el, namedSets));
 }
 

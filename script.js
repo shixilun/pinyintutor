@@ -88,6 +88,10 @@ function createSyllablePlayer() {
   playButton.setAttribute('aria-label', 'play');
   playButton.title = 'play';
   playButton.textContent = '▶';
+  // Clicking would otherwise move focus to the button; keeping it in the
+  // entry (cursor untouched) lets the learner edit and replay without
+  // clicking back into the box each time.
+  playButton.addEventListener('mousedown', (e) => e.preventDefault());
   playButton.addEventListener('click', () => {
     const value = entry.getValue();
     if (value !== null) playSyllable(value);

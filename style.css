@@ -246,6 +246,11 @@ body {
   color: #888;
 }
 
+.initial-final select:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
 .initial-final-create {
   margin-left: 4px;
   font-size: 14px;

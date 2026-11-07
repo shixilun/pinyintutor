@@ -484,10 +484,16 @@ function hydrateToneRows(el) {
 // any order and deleted, so a learner can line up, say, za and ca to
 // compare them.
 //
-// Every initial + final pair is checked when the page loads, and any bad
-// one turns the whole tag into a red error. parse() alone isn't enough:
-// a slip like d + yu combines into a real syllable (du, really d + wu),
-// so the result must also split back into the same initial and final.
+// The final dropdown stays disabled until an initial is chosen, and then
+// offers only the finals that fit it, so one tag can pair j with yu and
+// zh with wu (ju, zhu) without offering j + wu. Switching initials keeps
+// the chosen final if it still fits, otherwise blanks it.
+//
+// A pair fits if it combines into a syllable that parse() accepts and
+// that splits back into the same initial and final. parse() alone isn't
+// enough: a slip like d + yu combines into a real syllable (du, really
+// d + wu). When the page loads, an initial with no final that fits, or a
+// final with no initial that fits, turns the whole tag into a red error.
 function hydrateInitialFinal(el) {
   const initials = (el.getAttribute('i') || '').trim().split(/\s+/).filter(Boolean);
   const finals = (el.getAttribute('f') || '').trim().split(/\s+/).filter(Boolean);
@@ -495,16 +501,20 @@ function hydrateInitialFinal(el) {
     renderTagError(el, 'initialfinal needs an i and an f attribute');
     return;
   }
-  const bad = initials.flatMap((i) => finals
-    .filter((f) => {
-      const syl = initialfinal(i, f);
-      if (!syl || parse(syl) !== '') return true;
-      const [splitInitial, splitFinal] = splitrawsyl(syl);
-      return splitInitial !== i || splitFinal !== f;
-    })
-    .map((f) => `${i} + ${f}`));
-  if (bad.length > 0) {
-    renderTagError(el, `initialfinal has pairs that aren't pinyin syllables: ${bad.join(', ')}`);
+  const fits = (i, f) => {
+    const rawsyl = initialfinal(i, f);
+    if (!rawsyl || parse(rawsyl) !== '') return false;
+    const [splitInitial, splitFinal] = splitrawsyl(rawsyl);
+    return splitInitial === i && splitFinal === f;
+  };
+  const finalsFor = new Map(initials.map((i) => [i, finals.filter((f) => fits(i, f))]));
+  const lonelyInitials = initials.filter((i) => finalsFor.get(i).length === 0);
+  const lonelyFinals = finals.filter((f) => !initials.some((i) => finalsFor.get(i).includes(f)));
+  const problems = [];
+  if (lonelyInitials.length > 0) problems.push(`no final fits ${lonelyInitials.join(', ')}`);
+  if (lonelyFinals.length > 0) problems.push(`no initial fits ${lonelyFinals.join(', ')}`);
+  if (problems.length > 0) {
+    renderTagError(el, `initialfinal: ${problems.join('; ')}`);
     return;
   }
 
@@ -522,7 +532,18 @@ function hydrateInitialFinal(el) {
     return select;
   }
   const initialSelect = createSelect('initial', initials);
-  const finalSelect = createSelect('final', finals);
+  const finalSelect = createSelect('final', []);
+  finalSelect.disabled = true;
+
+  function updateFinals() {
+    const kept = finalSelect.value;
+    const fitting = finalsFor.get(initialSelect.value);
+    while (finalSelect.options.length > 1) finalSelect.remove(1);
+    fitting.forEach((f) => finalSelect.add(new Option(f)));
+    if (fitting.includes(kept)) finalSelect.value = kept;
+    else finalSelect.options[0].selected = true;
+    finalSelect.disabled = false;
+  }
 
   const plus = document.createElement('span');
   plus.textContent = '+';
@@ -545,26 +566,26 @@ function hydrateInitialFinal(el) {
     row.classList.add('flash');
   }
 
-  function createRow(syl) {
+  function createRow(rawsyl) {
     const handle = document.createElement('button');
     handle.type = 'button';
     handle.className = 'reorder-handle';
     handle.textContent = '⠿';
-    handle.setAttribute('aria-label', `move ${syl}`);
+    handle.setAttribute('aria-label', `move ${rawsyl}`);
     handle.title = 'drag to move';
 
-    const grid = createListenGrid([1, 2, 3, 4].map((tone) => addtone(syl, tone)));
+    const grid = createListenGrid([1, 2, 3, 4].map((tone) => addtone(rawsyl, tone)));
 
     const remove = document.createElement('button');
     remove.type = 'button';
     remove.className = 'row-delete';
     remove.textContent = '×';
-    remove.setAttribute('aria-label', `delete ${syl}`);
+    remove.setAttribute('aria-label', `delete ${rawsyl}`);
     remove.title = 'delete';
 
     const row = document.createElement('div');
     row.className = 'initial-final-row';
-    row.dataset.syllable = syl;
+    row.dataset.rawsyl = rawsyl;
     row.append(handle, grid.element, remove);
     remove.addEventListener('click', () => row.remove());
     return row;
@@ -572,12 +593,12 @@ function hydrateInitialFinal(el) {
 
   function choose() {
     if (!initialSelect.value || !finalSelect.value) return;
-    const syl = initialfinal(initialSelect.value, finalSelect.value);
-    let row = [...rows.children].find((r) => r.dataset.syllable === syl);
+    const rawsyl = initialfinal(initialSelect.value, finalSelect.value);
+    let row = [...rows.children].find((r) => r.dataset.rawsyl === rawsyl);
     if (row) {
       flash(row);
     } else {
-      row = createRow(syl);
+      row = createRow(rawsyl);
       rows.append(row);
     }
     row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -585,7 +606,10 @@ function hydrateInitialFinal(el) {
   const updateCreate = () => {
     create.disabled = !initialSelect.value || !finalSelect.value;
   };
-  initialSelect.addEventListener('change', updateCreate);
+  initialSelect.addEventListener('change', () => {
+    updateFinals();
+    updateCreate();
+  });
   finalSelect.addEventListener('change', updateCreate);
   create.addEventListener('click', choose);
 
@@ -632,10 +656,10 @@ function hydrateDictation(el, namedSets) {
 
   let syllables;
   try {
-    const syl = resolveSetAttr(sylAttr, namedSets);
+    const sylList = resolveSetAttr(sylAttr, namedSets);
     const rawsylList = resolveSetAttr(rawsylAttr, namedSets);
-    const expanded = rawsylList.flatMap((r) => [1, 2, 3, 4].map((tone) => addtone(r, tone)));
-    syllables = [...syl, ...expanded];
+    const expanded = rawsylList.flatMap((rawsyl) => [1, 2, 3, 4].map((tone) => addtone(rawsyl, tone)));
+    syllables = [...sylList, ...expanded];
     console.log('<dictation> pool:', syllables);
   } catch (err) {
     renderTagError(el, err.message);

@@ -618,6 +618,12 @@ body {
   margin: 0 0 1.1em;
 }
 
+/* A > quote keeps the line breaks it was written with (marked leaves them
+   in the text; HTML would otherwise run the lines together). */
+.lessons-content blockquote p {
+  white-space: pre-line;
+}
+
 /* Markdown ~~strikethrough~~: thicker than the font's own hairline so a
    struck-out spelling reads clearly as wrong. */
 .lessons-content del {

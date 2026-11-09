@@ -7,17 +7,16 @@ function createListenButton(syllable, { showIcon = false } = {}) {
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'listen-btn';
+  button.title = 'click to hear';
   button.addEventListener('click', () => playSyllable(syllable));
 
   function setShowIcon(next) {
     if (next) {
       button.textContent = '🔊';
       button.setAttribute('aria-label', `play ${syllable}`);
-      button.title = 'click to hear';
     } else {
       button.textContent = syllable;
       button.removeAttribute('aria-label');
-      button.removeAttribute('title');
     }
   }
 

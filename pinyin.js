@@ -1690,7 +1690,7 @@ function splitrawsyl(rawsyl) {
 // this method assumes initial and final are well-formed
 function initialfinal(initial, final) {
     if (!initial) return final;
-    if (!'yw'.includes(final[0])) return initial + final;
+    if (!'yw-'.includes(final[0])) return initial + final;
     switch (final) {
         // silent y/w
         case 'yi':
@@ -1722,5 +1722,7 @@ function initialfinal(initial, final) {
                 : initial + 'i' + final.slice(1);
         case 'w':
             return initial + 'u' + final.slice(1);
+        case '-':
+            return initial + final.slice(1);
     }
 }

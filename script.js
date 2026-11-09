@@ -73,13 +73,25 @@ function createSyllableEntry() {
     input.focus();
   }
 
-  return { input, hint, getValue, prime, focus };
+  // For a hint that isn't about spelling, such as a wrong quiz answer.
+  function showHint(text) {
+    hint.textContent = wrapHint(text);
+  }
+
+  // What's typed, unchecked, for a caller that must look at it before
+  // getValue() judges it.
+  function getText() {
+    return input.value.trim();
+  }
+
+  return { input, hint, getValue, prime, focus, showHint, getText };
 }
 
 // A syllable entry plus a play button: clicking it retrieves the entry's
 // value and plays it if valid; if invalid, the entry has already shown its
-// own hint and there's nothing further to do.
-function createSyllablePlayer() {
+// own hint and there's nothing further to do. A caller that needs to judge
+// the value first (a quiz) passes onPlay to replace that click handling.
+function createSyllablePlayer({ onPlay } = {}) {
   const entry = createSyllableEntry();
 
   const playButton = document.createElement('button');
@@ -92,10 +104,10 @@ function createSyllablePlayer() {
   // entry (cursor untouched) lets the learner edit and replay without
   // clicking back into the box each time.
   playButton.addEventListener('mousedown', (e) => e.preventDefault());
-  playButton.addEventListener('click', () => {
+  playButton.addEventListener('click', onPlay || (() => {
     const value = entry.getValue();
     if (value !== null) playSyllable(value);
-  });
+  }));
 
   const row = document.createElement('div');
   row.className = 'player-row';
@@ -105,7 +117,14 @@ function createSyllablePlayer() {
   element.className = 'syllable-player';
   element.append(row, entry.hint);
 
-  return { element, focus: entry.focus, prime: entry.prime, getValue: entry.getValue };
+  return {
+    element,
+    focus: entry.focus,
+    prime: entry.prime,
+    getValue: entry.getValue,
+    showHint: entry.showHint,
+    getText: entry.getText,
+  };
 }
 
 const newBoxButton = document.getElementById('new-box');

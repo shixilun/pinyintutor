@@ -488,32 +488,22 @@ function hydrateToneRows(el) {
   el.replaceWith(rows.element);
 }
 
-// <initialfinal i="z c s" f="a e ai"></initialfinal> — a dropdown of
-// initials and a dropdown of finals (finals written as they are with no
-// initial: yan, wan, ying), and a "create" button, enabled once both are
-// chosen, that adds that syllable's 4 tones as a row at the bottom, or
-// flashes the row if it's already there. A separate button (rather than
-// adding a row whenever a dropdown changes) lets a deleted row be made
-// again without changing the dropdowns first. Rows can be dragged into
-// any order and deleted, so a learner can line up, say, za and ca to
-// compare them.
-//
-// The final dropdown stays disabled until an initial is chosen, and then
-// offers only the finals that fit it, so one tag can pair j with yu and
-// zh with wu (ju, zhu) without offering j + wu. Switching initials keeps
-// the chosen final if it still fits, otherwise blanks it.
+// The i and f attributes shared by <initialfinal> and <ifspelltest>:
+// initials, and finals written as they are with no initial (yan, wan,
+// ying). Returns the initials and, for each one, the finals that fit it;
+// or null, having turned el into a red error.
 //
 // A pair fits if it combines into a syllable that parse() accepts and
 // that splits back into the same initial and final. parse() alone isn't
 // enough: a slip like d + yu combines into a real syllable (du, really
-// d + wu). When the page loads, an initial with no final that fits, or a
-// final with no initial that fits, turns the whole tag into a red error.
-function hydrateInitialFinal(el) {
+// d + wu). An initial with no final that fits, or a final with no initial
+// that fits, is an error.
+function readInitialFinalAttrs(el, tag) {
   const initials = (el.getAttribute('i') || '').trim().split(/\s+/).filter(Boolean);
   const finals = (el.getAttribute('f') || '').trim().split(/\s+/).filter(Boolean);
   if (initials.length === 0 || finals.length === 0) {
-    renderTagError(el, 'initialfinal needs an i and an f attribute');
-    return;
+    renderTagError(el, `${tag} needs an i and an f attribute`);
+    return null;
   }
   const fits = (i, f) => {
     const rawsyl = initialfinal(i, f);
@@ -528,9 +518,30 @@ function hydrateInitialFinal(el) {
   if (lonelyInitials.length > 0) problems.push(`no final fits ${lonelyInitials.join(', ')}`);
   if (lonelyFinals.length > 0) problems.push(`no initial fits ${lonelyFinals.join(', ')}`);
   if (problems.length > 0) {
-    renderTagError(el, `initialfinal: ${problems.join('; ')}`);
-    return;
+    renderTagError(el, `${tag}: ${problems.join('; ')}`);
+    return null;
   }
+  return { initials, finalsFor };
+}
+
+// <initialfinal i="z c s" f="a e ai"></initialfinal> — a dropdown of
+// initials and a dropdown of finals (finals written as they are with no
+// initial: yan, wan, ying), and a "create" button, enabled once both are
+// chosen, that adds that syllable's 4 tones as a row at the bottom, or
+// flashes the row if it's already there. A separate button (rather than
+// adding a row whenever a dropdown changes) lets a deleted row be made
+// again without changing the dropdowns first. Rows can be dragged into
+// any order and deleted, so a learner can line up, say, za and ca to
+// compare them.
+//
+// The final dropdown stays disabled until an initial is chosen, and then
+// offers only the finals that fit it, so one tag can pair j with yu and
+// zh with wu (ju, zhu) without offering j + wu. Switching initials keeps
+// the chosen final if it still fits, otherwise blanks it.
+function hydrateInitialFinal(el) {
+  const attrs = readInitialFinalAttrs(el, 'initialfinal');
+  if (!attrs) return;
+  const { initials, finalsFor } = attrs;
 
   // The hidden, disabled first option is the placeholder: it shows in the
   // closed dropdown until a choice is made, but never in the open list.
@@ -631,6 +642,96 @@ function hydrateInitialFinal(el) {
   element.className = 'initial-final';
   element.append(choice, rows);
   el.replaceWith(element);
+}
+
+// <ifspelltest i="d t" f="you wei"></ifspelltest> — a spelling quiz on
+// putting an initial and a final together, with the same attributes as
+// <initialfinal>. It starts blank; each question, from Try Next Syllable,
+// shows an initial and a final with a tone mark (d + yóu →), and the
+// learner types the syllable they spell (diú) into a syllable player.
+// Clicking play checks it: only the right answer plays;
+// anything else, misspelled, wrongly toned or just a different syllable,
+// shows a hint and stays silent. The right spelling with no tone mark at
+// all gets a hint but no score, since a missing mark is a lesser slip than
+// a wrong one. Otherwise only the first click per question is scored, so
+// fixing an answer after a hint doesn't change the tally, and the answer
+// is never revealed. Questions are drawn like <dictation>'s: no repeats
+// until every pair has come up in every tone, then reshuffled.
+function hydrateIfSpellTest(el) {
+  const attrs = readInitialFinalAttrs(el, 'ifspelltest');
+  if (!attrs) return;
+  const { initials, finalsFor } = attrs;
+  const pool = initials.flatMap((initial) => finalsFor.get(initial)
+    .flatMap((final) => [1, 2, 3, 4].map((tone) => ({ initial, final, tone }))));
+  const state = { bag: [], current: null, scored: false, correct: 0, total: 0 };
+
+  const initialCell = document.createElement('span');
+  initialCell.className = 'py if-spell-test-initial';
+  const plus = document.createElement('span');
+  plus.className = 'if-spell-test-sign';
+  plus.textContent = '+';
+  const finalCell = document.createElement('span');
+  finalCell.className = 'py if-spell-test-final';
+  const arrow = document.createElement('span');
+  arrow.className = 'if-spell-test-sign';
+  arrow.textContent = '→';
+  const player = createSyllablePlayer({ onPlay: check });
+  const question = document.createElement('div');
+  question.className = 'if-spell-test-question';
+  question.append(initialCell, plus, finalCell, arrow, player.element);
+
+  const nextButton = document.createElement('button');
+  nextButton.type = 'button';
+  nextButton.textContent = 'Try Next Syllable';
+
+  const score = document.createElement('div');
+  score.className = 'quiz-score';
+
+  function updateScore() {
+    const pct = state.total ? Math.round((state.correct / state.total) * 100) : 0;
+    score.textContent = `Score: ${state.correct}/${state.total} (${pct}%)`;
+  }
+
+  function nextQuestion() {
+    if (state.bag.length === 0) state.bag = shuffle(pool);
+    const { initial, final, tone } = state.bag.pop();
+    state.current = addtone(initialfinal(initial, final), tone);
+    state.scored = false;
+    initialCell.textContent = initial;
+    finalCell.textContent = addtone(final, tone);
+    player.prime('', 0);
+  }
+
+  function check() {
+    if (!state.current) return; // no question until Try Next Syllable is first clicked
+    // The right spelling with no tone mark yet isn't scored either way;
+    // getValue() still shows the entry's own "tone mark is missing" hint.
+    const [rawsyl, tone] = splittone(player.getText());
+    if (tone === 0 && rawsyl === splittone(state.current)[0]) {
+      player.getValue();
+      return;
+    }
+    const value = player.getValue(); // null if misspelled: the entry already showed its own hint
+    const right = value === state.current;
+    if (right) playSyllable(value);
+    else if (value !== null) player.showHint("that's not the syllable these make");
+    if (!state.scored) {
+      state.scored = true;
+      state.total++;
+      if (right) state.correct++;
+      updateScore();
+    }
+  }
+
+  nextButton.addEventListener('click', nextQuestion);
+
+  const element = document.createElement('div');
+  element.className = 'if-spell-test';
+  element.append(question, nextButton, score);
+  keepEntryFocus(element, player);
+  el.replaceWith(element);
+
+  updateScore();
 }
 
 // <dictation syl="pā tā" rawsyl="yi wu yu"></dictation> — a dictation quiz
@@ -793,6 +894,7 @@ function hydratePage(root, namedSets) {
   root.querySelectorAll('listen').forEach(hydrateListen);
   root.querySelectorAll('tonerows').forEach(hydrateToneRows);
   root.querySelectorAll('initialfinal').forEach(hydrateInitialFinal);
+  root.querySelectorAll('ifspelltest').forEach(hydrateIfSpellTest);
   root.querySelectorAll('dictation').forEach((el) => hydrateDictation(el, namedSets));
 }
 

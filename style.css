@@ -367,6 +367,58 @@ body {
   color: #666;
 }
 
+.if-spell-test {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 500px;
+  margin: 16px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+/* A grid so "initial + final →" and the entry row share one line, with
+   the hint on its own line spanning it all underneath. The player's
+   wrapper steps aside (display: contents) so its row and hint become grid
+   items. The initial and final columns have fixed widths, wide enough for
+   zh and the longest toned final, so the entry and play button stay put
+   from question to question; the initial hugs the + from the left and the
+   final from the right. The hint is fixed in size like <dictation>'s, so
+   the quiz never resizes when one appears. Everything on the line shares
+   a baseline, as it would in running text, the typed syllable included;
+   centering would set each piece by its font's box instead. */
+.if-spell-test-question {
+  display: grid;
+  grid-template-columns: 1.4em auto 2.8em auto auto;
+  align-items: baseline;
+  column-gap: 10px;
+  row-gap: 6px;
+  font-size: 20px;
+}
+
+.if-spell-test-initial {
+  justify-self: end;
+}
+
+.if-spell-test-sign {
+  color: #888;
+}
+
+.if-spell-test-question .syllable-player {
+  display: contents;
+}
+
+.if-spell-test-question .entry-hint {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: 300px;
+  max-width: none;
+  min-height: 5.2em;
+}
+
 /* Dedicated pinyin webfont (adventor-pinyin) — applied everywhere pinyin
    syllables are displayed to the learner, not just <py>. Falls back to
    the earlier placeholder styling if the font fails to load. */

@@ -307,6 +307,7 @@ parse['ia'] = (initial) => {
     case 'n':
     case 'g':
     case 'k':
+    case 'r':
         return `${initial}ia is not a syllable in pinyin`;
     case 'z':
     case 'zh':
@@ -331,6 +332,7 @@ parse['ian'] = (initial) => {
     case 'f':
     case 'g':
     case 'k':
+    case 'r':
         return `${initial}ian is not a syllable in pinyin`;
     case 'z':
     case 'zh':
@@ -360,6 +362,7 @@ parse['iang'] = (initial) => {
     case 't':
     case 'g':
     case 'k':
+    case 'r':
         return `${initial}iang is not a syllable in pinyin`;
     case 'z':
     case 'zh':
@@ -384,6 +387,7 @@ parse['iao'] = (initial) => {
     case 'f':
     case 'g':
     case 'k':
+    case 'r':
         return `${initial}iao is not a syllable in pinyin`;
     case 'z':
     case 'zh':
@@ -432,6 +436,7 @@ parse['ie'] = (initial) => {
     case 'f':
     case 'g':
     case 'k':
+    case 'r':
         return `${initial}ie is not a syllable in pinyin`;
     case 'z':
     case 'zh':
@@ -482,6 +487,7 @@ parse['in'] = (initial) => {
     case 't':
     case 'g':
     case 'k':
+    case 'r':
         return `${initial}in is not a syllable in pinyin`;
     case 'z':
     case 'zh':
@@ -506,6 +512,7 @@ parse['ing'] = (initial) => {
     case 'f':
     case 'g':
     case 'k':
+    case 'r':
         return `${initial}ing is not a syllable in pinyin`;
     case 'z':
     case 'zh':
@@ -599,6 +606,7 @@ parse['iu'] = (initial) => {
     case 't':
     case 'g':
     case 'k':
+    case 'r':
         return `${initial}iu is not a syllable in pinyin`;
     case 'z':
     case 'zh':

@@ -421,7 +421,9 @@ body {
 
 /* Dedicated pinyin webfont (adventor-pinyin) — applied everywhere pinyin
    syllables are displayed to the learner, not just <py>. Falls back to
-   the earlier placeholder styling if the font fails to load. */
+   the earlier placeholder styling if the font fails to load. Never bold,
+   even inside **bold** lesson text: the font has no bold face, and a
+   browser would otherwise fake one. */
 .py,
 .zy-converter-input.zy::placeholder,
 .entry-hint,
@@ -430,6 +432,7 @@ body {
 .initial-final select,
 .initial-final option {
   font-family: 'Adventor Pinyin', Arial, Helvetica, sans-serif;
+  font-weight: normal;
 }
 
 /* 注音符号 (<zy>) — Traditional Chinese system fonts, no webfont. */

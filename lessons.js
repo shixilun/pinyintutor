@@ -490,7 +490,8 @@ function hydrateToneRows(el) {
 
 // The i, f and exclude attributes shared by <initialfinal> and
 // <ifspelltest>: initials; finals written as they are with no initial
-// (yan, wan, ying); and, optionally, toneless syllables to leave out,
+// (yan, wan, ying), or -i for the final of zhi chi shi ri zi ci si (which
+// splitrawsyl() writes (-i)); and, optionally, toneless syllables to leave out,
 // such as bo po mo fo before that spelling has been taught. Returns the
 // initials and, for each one, the finals that fit it; or null, having
 // turned el into a red error.
@@ -515,7 +516,7 @@ function readInitialFinalAttrs(el, tag) {
     const rawsyl = initialfinal(i, f);
     if (!rawsyl || parse(rawsyl) !== '') return false;
     const [splitInitial, splitFinal] = splitrawsyl(rawsyl);
-    if (splitInitial !== i || splitFinal !== f) return false;
+    if (splitInitial !== i || (splitFinal === '(-i)' ? '-i' : splitFinal) !== f) return false;
     made.add(rawsyl);
     return !excluded.includes(rawsyl);
   };

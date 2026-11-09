@@ -65,6 +65,19 @@ function createToneRows(rawsylList) {
   return { element, rows, setShowIcon };
 }
 
+// A quiz's answer entry keeps focus whatever in the quiz is clicked: a
+// mouse press anywhere but the entry itself doesn't take focus, and any
+// button, even one reached with Tab, hands focus back to the entry once
+// it's clicked. So the learner can always just keep typing.
+function keepEntryFocus(element, player) {
+  element.addEventListener('mousedown', (e) => {
+    if (!e.target.closest('input')) e.preventDefault();
+  });
+  element.addEventListener('click', (e) => {
+    if (e.target.closest('button')) player.focus();
+  });
+}
+
 function shuffle(list) {
   const copy = [...list];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -128,6 +141,7 @@ function createDictationQuiz(syllables) {
   nextButton.addEventListener('click', nextQuestion);
 
   element.append(listenSlot, answerPlayer.element, checkButton, nextButton, score);
+  keepEntryFocus(element, answerPlayer);
 
   updateScore();
   nextQuestion();

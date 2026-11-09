@@ -446,6 +446,7 @@ function hydratePySplitter(el) {
     button.disabled = input.value.trim() === '';
     if (button.disabled) hint.textContent = '';
   });
+  keepEntryFocus(table, input);
   el.replaceWith(table);
 }
 

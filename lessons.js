@@ -488,33 +488,43 @@ function hydrateToneRows(el) {
   el.replaceWith(rows.element);
 }
 
-// The i and f attributes shared by <initialfinal> and <ifspelltest>:
-// initials, and finals written as they are with no initial (yan, wan,
-// ying). Returns the initials and, for each one, the finals that fit it;
-// or null, having turned el into a red error.
+// The i, f and exclude attributes shared by <initialfinal> and
+// <ifspelltest>: initials; finals written as they are with no initial
+// (yan, wan, ying); and, optionally, toneless syllables to leave out,
+// such as bo po mo fo before that spelling has been taught. Returns the
+// initials and, for each one, the finals that fit it; or null, having
+// turned el into a red error.
 //
 // A pair fits if it combines into a syllable that parse() accepts and
-// that splits back into the same initial and final. parse() alone isn't
-// enough: a slip like d + yu combines into a real syllable (du, really
-// d + wu). An initial with no final that fits, or a final with no initial
-// that fits, is an error.
+// that splits back into the same initial and final, and that syllable
+// isn't excluded. parse() alone isn't enough: a slip like d + yu combines
+// into a real syllable (du, really d + wu). An initial with no final that
+// fits, a final with no initial that fits, or an excluded syllable that no
+// pair makes (likely a typo) is an error.
 function readInitialFinalAttrs(el, tag) {
-  const initials = (el.getAttribute('i') || '').trim().split(/\s+/).filter(Boolean);
-  const finals = (el.getAttribute('f') || '').trim().split(/\s+/).filter(Boolean);
+  const split = (name) => (el.getAttribute(name) || '').trim().split(/\s+/).filter(Boolean);
+  const initials = split('i');
+  const finals = split('f');
+  const excluded = split('exclude');
   if (initials.length === 0 || finals.length === 0) {
     renderTagError(el, `${tag} needs an i and an f attribute`);
     return null;
   }
+  const made = new Set();
   const fits = (i, f) => {
     const rawsyl = initialfinal(i, f);
     if (!rawsyl || parse(rawsyl) !== '') return false;
     const [splitInitial, splitFinal] = splitrawsyl(rawsyl);
-    return splitInitial === i && splitFinal === f;
+    if (splitInitial !== i || splitFinal !== f) return false;
+    made.add(rawsyl);
+    return !excluded.includes(rawsyl);
   };
   const finalsFor = new Map(initials.map((i) => [i, finals.filter((f) => fits(i, f))]));
   const lonelyInitials = initials.filter((i) => finalsFor.get(i).length === 0);
   const lonelyFinals = finals.filter((f) => !initials.some((i) => finalsFor.get(i).includes(f)));
+  const strayExcluded = excluded.filter((rawsyl) => !made.has(rawsyl));
   const problems = [];
+  if (strayExcluded.length > 0) problems.push(`no pair makes excluded ${strayExcluded.join(', ')}`);
   if (lonelyInitials.length > 0) problems.push(`no final fits ${lonelyInitials.join(', ')}`);
   if (lonelyFinals.length > 0) problems.push(`no initial fits ${lonelyFinals.join(', ')}`);
   if (problems.length > 0) {

@@ -255,11 +255,15 @@ function hydrateZyConverter(el) {
     createArrow('←', 'pinyin to bopomofo', pyToZy),
   );
 
-  zy.input.addEventListener('focus', () => { zyInsertTarget = zy.input; });
-  py.input.addEventListener('focus', () => { zyInsertTarget = null; });
+  // The box the learner last typed in, which keeps focus through arrow
+  // clicks.
+  let lastInput = null;
+  zy.input.addEventListener('focus', () => { zyInsertTarget = zy.input; lastInput = zy.input; });
+  py.input.addEventListener('focus', () => { zyInsertTarget = null; lastInput = py.input; });
   py.input.addEventListener('input', () => autoCorrect(py.input));
   zy.input.addEventListener('keydown', (e) => { if (e.key === 'Enter') zyToPy(); });
   py.input.addEventListener('keydown', (e) => { if (e.key === 'Enter') pyToZy(); });
+  keepEntryFocus(element, { focus: () => lastInput?.focus() });
 
   element.append(zy.side, arrows, py.side);
   el.replaceWith(element);

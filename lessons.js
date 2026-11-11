@@ -2,8 +2,9 @@
 // regardless of what it's currently displaying. Its face shows either the
 // syllable text or a generic speaker icon — the icon mode exists so a grid
 // of these can be tested/laid out without depending on real lesson content
-// naming a specific syllable to look at.
-function createListenButton(syllable, { showIcon = false } = {}) {
+// naming a specific syllable to look at. A `label`, if given, is shown in
+// place of the syllable text.
+function createListenButton(syllable, { showIcon = false, label = null } = {}) {
   const button = document.createElement('button');
   button.type = 'button';
   button.className = 'listen-btn';
@@ -15,7 +16,7 @@ function createListenButton(syllable, { showIcon = false } = {}) {
       button.textContent = '🔊';
       button.setAttribute('aria-label', `play ${syllable}`);
     } else {
-      button.textContent = syllable;
+      button.textContent = label ?? syllable;
       button.removeAttribute('aria-label');
     }
   }
@@ -476,12 +477,14 @@ function hydrateSyllablePlayer(el) {
 // <listen syl="mā má mǎ mà" icon></listen> — a wrapping grid of listen
 // buttons. `icon` is a boolean-presence attribute: present shows the
 // generic speaker icon on every button, absent (the default) shows the
-// syllable text.
+// syllable text. label="mystery" shows that text instead, on every
+// button; `icon` wins if both are given.
 function hydrateListen(el) {
   const syllables = el.getAttribute('syl').trim().split(/\s+/);
   const showIcon = el.hasAttribute('icon');
-  console.log('<listen> syl:', syllables, 'icon:', showIcon);
-  const grid = createListenGrid(syllables, { showIcon });
+  const label = el.getAttribute('label');
+  console.log('<listen> syl:', syllables, 'icon:', showIcon, 'label:', label);
+  const grid = createListenGrid(syllables, { showIcon, label });
   el.replaceWith(grid.element);
 }
 

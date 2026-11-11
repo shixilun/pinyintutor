@@ -710,12 +710,15 @@ body {
    (547/1000 / 2 = 0.273em) above the baseline, less half the line.
    It must stay a text decoration, not a drawn box: Chrome's built-in
    dark mode recolors decorations with the text but treats a filled box
-   as background and leaves it dark. */
+   as background and leaves it dark. A <del> inside pinyin
+   (<py>~~bwo~~</py>) gets the same raised underline in place of its
+   own line. */
 .lessons-content del:has(.py) {
   text-decoration: none;
 }
 
-.lessons-content del .py {
+.lessons-content del .py,
+.lessons-content .py del {
   text-decoration: underline 2px;
   text-decoration-skip-ink: none;
   text-underline-offset: calc(-0.273em - 1px);

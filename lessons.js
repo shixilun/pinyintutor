@@ -161,11 +161,12 @@ function createDictationQuiz(syllables) {
 //
 // <py>mā</py> — purely typographic, not interactive: renders its text in
 // the dedicated pinyin font (once one is vendored in; a placeholder style
-// stands in for it for now).
+// stands in for it for now). Markdown inside it is kept, so
+// <py>b + wo → ~~bwo~~ → bo</py> strikes out just the bwo.
 function hydratePy(el) {
   const span = document.createElement('span');
   span.className = 'py';
-  span.textContent = el.textContent;
+  span.append(...el.childNodes);
   el.replaceWith(span);
 }
 
